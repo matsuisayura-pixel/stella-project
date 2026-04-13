@@ -1,0 +1,58 @@
+# 曖昧語リスト（これらの語が要件に含まれると減点）
+# Banned words list for requirements (each occurrence = -1 point)
+
+# 日本語
+適切
+最適
+よしなに
+できるだけ
+可能な限り
+なるべく
+高速
+速やか
+簡単
+直感的
+ユーザーフレンドリー
+スムーズ
+十分
+柔軟
+高品質
+いい感じ
+ベスト
+適宜
+必要に応じて
+状況に応じて
+妥当
+効率的
+効果的
+迅速
+円滑
+容易
+シンプル
+わかりやすい
+使いやすい
+見やすい
+
+# English
+appropriate
+as soon as possible
+user friendly
+quickly
+fast
+best effort
+should be easy
+flexible
+adequate
+sufficient
+intuitive
+simple
+easy
+smooth
+optimal
+efficient
+effective
+reasonable
+good
+nice
+proper
+suitable

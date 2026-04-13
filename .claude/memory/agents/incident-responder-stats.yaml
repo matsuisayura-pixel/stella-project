@@ -1,0 +1,144 @@
+agent_name: incident-responder
+total_tasks: 0
+successful_tasks: 0
+failed_tasks: 0
+success_rate: 0
+avg_quality_score: 0
+avg_duration_ms: 0
+last_updated: 2025-11-04T00:00:00Z
+recent_tasks: []
+trends:
+  success_rate_trend: 0
+  quality_score_trend: 0
+  avg_duration_trend: 0
+specializations: {}
+omega_metrics:
+  performance_bounds:
+    min_quality_score: 43
+    min_success_rate: 0.8
+    max_latency_ms: 5000
+    worst_case:
+      quality_score: 43
+      success_rate: 0
+      latency_ms: 0
+  dependencies:
+    omega: 120
+    little_omega: 66
+    coupling_ratio: 1.8181818181818181
+    dependencies_list:
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Grep
+        - Glob
+        - Bash
+      agents:
+        - incident-responder
+        - on-call
+        - SEV1-4
+        - incident-response
+        - high-latency
+        - database-outage
+        - service-down
+        - high-error-rate
+        - 2024-01-15
+        - incident-severity-matrix
+        - escalation-policy
+        - communication-plan
+        - incident-tracker
+        - rca-helper
+        - metrics-aggregator
+        - pagerduty-config
+        - escalation-policies
+        - SEV-1
+        - SEV-2
+        - SEV-3
+        - Non-critical
+        - 5-10
+        - non-peak
+        - SEV-4
+        - Low-priority
+        - backend-api
+        - pod-name
+        - postgres-0
+        - redis-0
+        - redis-cli
+        - curl-format
+        - external-api
+        - field-selector
+        - Medium-term
+        - 5-30
+        - Long-term
+        - read-only
+        - read-replica
+        - team-lead
+        - eng-manager
+        - Post-Incident
+        - On-call
+        - Write-Ahead
+        - devops-team
+        - 2024-01-17
+        - backend-team
+        - 2024-01-18
+        - sre-team
+        - 2024-01-25
+        - incident-team
+        - 2024-01-20
+        - 2024-02-01
+        - 2024-02-10
+        - 2024-02-15
+        - real-time
+        - incident-2024-01
+        - database-health
+        - Follow-up
+        - Step-by-step
+        - On-Call
+      external: []
+    coupling_health:
+      status: fair
+      recommendation: Moderate coupling. Monitor and consider refactoring if increasing.
+  completion_probability:
+    base_omega: 0
+    by_complexity:
+      low: 0.58
+      medium: 0.48
+      high: 0.5
+    by_category:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+    confidence_interval: 0.05
+    sample_size: 0
+    prediction_accuracy:
+      total_predictions: 0
+      accurate_predictions: 0
+      accuracy_rate: 0
+learning_metrics:
+  learning_rate: 0.1
+  quality_trend:
+    direction: stable
+    rate: 0
+  success_trend:
+    direction: stable
+    rate: 0
+  specialization:
+    primary_category: implementation
+    specialization_score: 0
+    categories:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+metadata:
+  last_updated: 2025-11-06T09:25:44.413Z
+  schema_version: 1.0.0
+  omega_integration_date: 2025-11-06
+  passes_quality_gates:
+    min_quality: false
+    min_success_rate: true
+    acceptable_coupling: true
+  overall_health: good

@@ -1,0 +1,32 @@
+{
+  "category": "observability",
+  "description": "監視・可観測性ツール群",
+  "source_servers": ["sentry"],
+  "tools": [
+    {"name": "obs_log_query", "description": "ログクエリ"},
+    {"name": "obs_log_stream", "description": "ログストリーム"},
+    {"name": "obs_log_filter", "description": "ログフィルタ"},
+    {"name": "obs_trace_view", "description": "トレース表示"},
+    {"name": "obs_trace_search", "description": "トレース検索"},
+    {"name": "obs_span_detail", "description": "スパン詳細"},
+    {"name": "obs_metric_query", "description": "メトリクスクエリ"},
+    {"name": "obs_metric_alert", "description": "アラート設定"},
+    {"name": "obs_dashboard_create", "description": "ダッシュボード作成"},
+    {"name": "obs_dashboard_view", "description": "ダッシュボード表示"},
+    {"name": "obs_error_list", "description": "エラー一覧"},
+    {"name": "obs_error_detail", "description": "エラー詳細"},
+    {"name": "obs_error_resolve", "description": "エラー解決"},
+    {"name": "obs_error_assign", "description": "エラー割当"},
+    {"name": "obs_performance", "description": "パフォーマンス"},
+    {"name": "obs_apdex", "description": "Apdex計測"},
+    {"name": "obs_slo_status", "description": "SLO状態"},
+    {"name": "obs_slo_burn", "description": "エラーバジェット"},
+    {"name": "obs_incident_create", "description": "インシデント作成"},
+    {"name": "obs_incident_update", "description": "インシデント更新"},
+    {"name": "obs_runbook_execute", "description": "Runbook実行"},
+    {"name": "obs_on_call", "description": "オンコール管理"},
+    {"name": "obs_report_generate", "description": "レポート生成"},
+    {"name": "obs_health_check", "description": "ヘルスチェック"}
+  ],
+  "count": 24
+}

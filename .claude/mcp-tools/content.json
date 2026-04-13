@@ -1,0 +1,17 @@
+{
+  "category": "content",
+  "description": "コンテンツ操作ツール群",
+  "source_servers": ["notion", "taiyou"],
+  "tools": [
+    {"name": "content_generate", "description": "コンテンツ生成"},
+    {"name": "content_edit", "description": "コンテンツ編集"},
+    {"name": "content_optimize", "description": "コンテンツ最適化"},
+    {"name": "content_publish", "description": "公開"},
+    {"name": "content_schedule", "description": "スケジュール"},
+    {"name": "content_analyze", "description": "分析"},
+    {"name": "content_translate", "description": "翻訳"},
+    {"name": "content_summarize", "description": "要約"},
+    {"name": "content_keywords", "description": "キーワード抽出"}
+  ],
+  "count": 9
+}

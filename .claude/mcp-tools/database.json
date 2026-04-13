@@ -1,0 +1,33 @@
+{
+  "category": "database",
+  "description": "データベース操作ツール群",
+  "source_servers": ["postgres-ro", "postgres-rw", "supabase"],
+  "tools": [
+    {"name": "db_query", "description": "SQLクエリ実行"},
+    {"name": "db_select", "description": "データ取得"},
+    {"name": "db_insert", "description": "データ挿入"},
+    {"name": "db_update", "description": "データ更新"},
+    {"name": "db_delete", "description": "データ削除"},
+    {"name": "db_schema", "description": "スキーマ取得"},
+    {"name": "db_tables", "description": "テーブル一覧"},
+    {"name": "db_columns", "description": "カラム情報"},
+    {"name": "db_indexes", "description": "インデックス情報"},
+    {"name": "db_constraints", "description": "制約情報"},
+    {"name": "db_migrate", "description": "マイグレーション実行"},
+    {"name": "db_rollback", "description": "ロールバック"},
+    {"name": "db_seed", "description": "シードデータ投入"},
+    {"name": "db_backup", "description": "バックアップ"},
+    {"name": "db_restore", "description": "リストア"},
+    {"name": "db_analyze", "description": "クエリ分析"},
+    {"name": "db_explain", "description": "実行計画"},
+    {"name": "db_vacuum", "description": "バキューム"},
+    {"name": "db_stats", "description": "統計情報"},
+    {"name": "db_connections", "description": "接続情報"},
+    {"name": "db_transactions", "description": "トランザクション管理"},
+    {"name": "db_locks", "description": "ロック情報"},
+    {"name": "db_size", "description": "サイズ情報"},
+    {"name": "db_performance", "description": "パフォーマンス分析"},
+    {"name": "db_health", "description": "ヘルスチェック"}
+  ],
+  "count": 25
+}

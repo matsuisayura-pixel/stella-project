@@ -1,0 +1,139 @@
+{
+  "version": "3.0",
+  "description": "LLM Auto-Switching System v3.0 - リサーチ強化版（Perplexity Deep Research + Grok 3 + Groq統合）",
+  "routing": {
+    "default": "deepseek-v3",
+    "rules": [
+      { "pattern": "codegen",        "model": "minimax-m2-5" },
+      { "pattern": "refactor",       "model": "minimax-m2-5" },
+      { "pattern": "debug",          "model": "minimax-m2-5" },
+      { "pattern": "japanese",       "model": "glm-5" },
+      { "pattern": "document",       "model": "glm-5" },
+      { "pattern": "longContext",    "model": "groq-scout" },
+      { "pattern": "background",     "model": "deepseek-v3" },
+      { "pattern": "webSearch",      "model": "grok-3-heavy" },
+      { "pattern": "deepResearch",   "model": "perplexity-deep-research" },
+      { "pattern": "academicSearch", "model": "perplexity-sonar-pro" },
+      { "pattern": "trendSearch",    "model": "grok-3-heavy" },
+      { "pattern": "socialTrend",    "model": "grok-3-heavy" },
+      { "pattern": "batchInference", "model": "groq-maverick" }
+    ]
+  },
+  "models": {
+    "minimax-m2-5": {
+      "description": "コーディングメイン / SWE-bench 80.2%",
+      "provider": "openrouter",
+      "modelId": "minimax/minimax-m2.5",
+      "cost": { "input": 0.30, "output": 1.20 }
+    },
+    "deepseek-v3": {
+      "description": "汎用・Sonnet 4.6代替",
+      "provider": "openrouter",
+      "modelId": "deepseek/deepseek-chat",
+      "cost": { "input": 0.14, "output": 0.28 }
+    },
+    "glm-5": {
+      "description": "日本語処理専門 / 最安",
+      "provider": "openrouter",
+      "modelId": "z-ai/glm-5",
+      "cost": { "input": 0.11, "output": 0.11 }
+    },
+    "xai-grok-mini": {
+      "description": "Grok 3 Mini / 軽量・高速",
+      "provider": "xai",
+      "modelId": "grok-3-mini",
+      "cost": { "input": 0.30, "output": 0.50 },
+      "note": "軽量タスク・コスト重視時に使用"
+    },
+    "grok-3-heavy": {
+      "description": "Grok 3 フルモデル / 1Mコンテキスト・X統合・DeepSearch / リアルタイムトレンド最強",
+      "provider": "xai",
+      "modelId": "grok-3",
+      "cost": { "input": 3.00, "output": 15.00 },
+      "webSearch": true,
+      "contextWindow": 131072,
+      "note": "Web検索・SNSトレンド・技術推論が必要な場合のみ使用。高コストに注意"
+    },
+    "groq-scout": {
+      "description": "超大容量コンテキスト専用 / 10Mトークン対応 / 無料枠あり",
+      "provider": "groq",
+      "modelId": "llama-4-scout-17b-16e-instruct",
+      "cost": { "input": 0.11, "output": 0.34 },
+      "note": "10Mトークン超の場合に使用（最優先フォールバック）"
+    },
+    "groq-maverick": {
+      "description": "Llama 4 Maverick / 超高速バッチ処理 / RAGパイプライン基盤",
+      "provider": "groq",
+      "modelId": "meta-llama/llama-4-maverick-17b-128e-instruct",
+      "cost": { "input": 0.50, "output": 0.77 },
+      "speed": "433-1200 tokens/sec",
+      "note": "大量バッチ・自作RAGパイプラインの推論エンジンとして使用"
+    },
+    "perplexity-sonar-pro": {
+      "description": "Perplexity Sonar Pro / Web検索込み / 引用付き回答",
+      "provider": "perplexity",
+      "modelId": "sonar-pro",
+      "cost": { "input": 3.00, "output": 15.00, "searchCost": 0.005 },
+      "webSearch": true,
+      "note": "引用付き回答が必要な場合。検索コスト$0.005/リクエスト加算"
+    },
+    "perplexity-deep-research": {
+      "description": "Perplexity Sonar Deep Research / 平均50ソース引用 / 学術・ビジネスリサーチ最強",
+      "provider": "perplexity",
+      "modelId": "sonar-deep-research",
+      "cost": { "input": 2.00, "output": 8.00, "searchCost": 0.005 },
+      "webSearch": true,
+      "avgSources": 50,
+      "avgTime": "3min",
+      "note": "深いリサーチタスク専用。完了まで3分程度かかる非同期処理"
+    }
+  },
+  "providers": {
+    "openrouter": {
+      "apiKeyEnv": "OPENROUTER_API_KEY",
+      "baseUrl": "https://openrouter.ai/api/v1"
+    },
+    "xai": {
+      "apiKeyEnv": "XAI_API_KEY",
+      "baseUrl": "https://api.x.ai/v1"
+    },
+    "groq": {
+      "apiKeyEnv": "GROQ_API_KEY",
+      "baseUrl": "https://api.groq.com/openai/v1"
+    },
+    "perplexity": {
+      "apiKeyEnv": "PERPLEXITY_API_KEY",
+      "baseUrl": "https://api.perplexity.ai",
+      "note": "sonar-deep-researchは非同期API。完了まで最大5分待機が必要"
+    }
+  },
+  "researchPipeline": {
+    "description": "リサーチ用途別の推奨パイプライン",
+    "pipelines": {
+      "quickSearch": {
+        "description": "30秒以内の高速調査",
+        "steps": ["perplexity-sonar-pro"]
+      },
+      "deepResearch": {
+        "description": "学術・ビジネス向け深層調査（3分）",
+        "steps": ["perplexity-deep-research"]
+      },
+      "trendResearch": {
+        "description": "SNS・リアルタイムトレンド調査",
+        "steps": ["grok-3-heavy"]
+      },
+      "fullResearch": {
+        "description": "最高品質リサーチ（両方統合）",
+        "steps": ["grok-3-heavy", "perplexity-deep-research"],
+        "merge": "結果を統合してレポート生成"
+      }
+    }
+  },
+  "budget": {
+    "monthly": 40,
+    "daily": 5,
+    "warningPercent": 80,
+    "highCostModels": ["grok-3-heavy", "perplexity-deep-research"],
+    "highCostWarning": "grok-3-heavy と perplexity-deep-research は高コスト。月予算$40超過に注意"
+  }
+}

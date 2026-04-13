@@ -1,0 +1,30 @@
+{
+  "_comment": "Marketing preset: Ads, SNS, LP, outreach tools",
+  "disabledMcpServers": [
+    "qdrant",
+    "chroma",
+    "n8n-mcp",
+    "mcp-memory-service",
+    "sequential-thinking",
+    "gpt-researcher",
+    "figma",
+    "youtube",
+    "context7",
+    "voice-ai",
+    "ai-sdr",
+    "line-bot"
+  ],
+  "activeMcpCount": 10,
+  "activeMcpServers": [
+    "taisun-proxy",
+    "playwright",
+    "open-websearch",
+    "meta-ads",
+    "facebook-ads-library",
+    "obsidian",
+    "twitter-client",
+    "apify",
+    "tavily",
+    "pexels"
+  ]
+}

@@ -1,0 +1,88 @@
+# LLM Auto-Switching System v1.0 - Performance Configuration
+cache:
+  maxSize: 500
+  defaultTTLMs: 300000
+  cleanupIntervalMs: 60000
+  enabled: true
+
+rateLimit:
+  requestsPerMinute: 60
+  tokensPerMinute: 400000
+  concurrentRequests: 5
+  burstAllowance: 10
+
+parallelExecution:
+  maxParallelAgents: 3
+  maxParallelTasks: 5
+  queueTimeout: 30000
+
+modelSelection:
+  defaultModel: claude-sonnet
+  preferHaikuFor: [simple-query, formatting, translation, summarization]
+  preferOpusFor: [architecture-design, complex-debugging, security-review, system-design]
+  complexityThresholds:
+    trivial: 100
+    simple: 500
+    moderate: 2000
+    complex: 5000
+
+monitoring:
+  enabled: true
+  sampleRatePercent: 100
+  metricsRetentionDays: 30
+
+modelRouting:
+  providers:
+    - name: anthropic-max
+      priority: 1
+      baseUrl: https://api.anthropic.com
+      apiKeyEnv: ANTHROPIC_API_KEY
+      enabled: true
+    - name: ollama
+      priority: 2
+      baseUrl: http://localhost:11434
+      enabled: true
+      healthEndpoint: /api/tags
+    - name: anthropic-api
+      priority: 3
+      baseUrl: https://api.anthropic.com
+      apiKeyEnv: ANTHROPIC_API_KEY
+      enabled: true
+    - name: openai
+      priority: 4
+      baseUrl: https://api.openai.com/v1
+      apiKeyEnv: OPENAI_API_KEY
+      enabled: true
+    - name: openrouter
+      priority: 5
+      baseUrl: https://openrouter.ai/api/v1
+      apiKeyEnv: OPENROUTER_API_KEY
+      enabled: true
+
+  costTable:
+    claude-opus: { inputPerMillion: 5, outputPerMillion: 25, cachedInputPerMillion: 0.5 }
+    claude-sonnet: { inputPerMillion: 3, outputPerMillion: 15, cachedInputPerMillion: 0.3 }
+    claude-haiku: { inputPerMillion: 1, outputPerMillion: 5, cachedInputPerMillion: 0.1 }
+    gpt53-codex: { inputPerMillion: 1.25, outputPerMillion: 10 }
+    ollama-qwen3-coder: { inputPerMillion: 0, outputPerMillion: 0 }
+    ollama-glm4: { inputPerMillion: 0, outputPerMillion: 0 }
+    openrouter-free: { inputPerMillion: 0, outputPerMillion: 0 }
+
+  routingRules:
+    - { tier: 0, taskComplexity: trivial, preferredModel: ollama-qwen3-coder, fallbackModels: [claude-haiku, openrouter-free], maxCostPerRequest: 0.01 }
+    - { tier: 1, taskComplexity: simple, preferredModel: claude-haiku, fallbackModels: [ollama-qwen3-coder, openrouter-free], maxCostPerRequest: 0.05 }
+    - { tier: 2, taskComplexity: moderate, preferredModel: claude-sonnet, fallbackModels: [claude-haiku, ollama-qwen3-coder], maxCostPerRequest: 0.20 }
+    - { tier: 3, taskComplexity: complex, preferredModel: claude-sonnet, fallbackModels: [claude-opus, claude-haiku], maxCostPerRequest: 0.50 }
+    - { tier: 4, taskComplexity: expert, preferredModel: claude-opus, fallbackModels: [claude-sonnet], maxCostPerRequest: 2.00 }
+
+  budget:
+    monthlyLimit: 50
+    dailyLimit: 5
+    warningThresholdPercent: 80
+    hardLimitAction: fallback-to-free
+    globalMonthlyLimit: 200
+    globalDailyLimit: 15
+    opusDailyLimit: 2
+    opusMonthlyLimit: 30
+
+  fallbackChain: [claude-opus, claude-sonnet, gpt53-codex, claude-haiku, ollama-qwen3-coder, openrouter-free]

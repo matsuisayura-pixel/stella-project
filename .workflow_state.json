@@ -1,0 +1,126 @@
+{
+  "version": "2.0.0",
+  "meta": {
+    "workflowId": "user_request",
+    "strict": true,
+    "currentPhase": 1,
+    "startedAt": "2026-04-09T09:55:53.226Z",
+    "lastUpdated": "2026-04-13T14:21:10.171Z",
+    "autoMappedSkills": [
+      {
+        "name": "基本リサーチ（簡易調査）",
+        "required_skills": [
+          "research"
+        ],
+        "strict": false
+      }
+    ]
+  },
+  "intentContractRef": null,
+  "activeSkillId": null,
+  "activeSkillStepId": null,
+  "baseline": {
+    "files": {}
+  },
+  "registeredInputs": {
+    "referenceAssets": []
+  },
+  "locks": {
+    "referenceAssets": []
+  },
+  "evidence": {
+    "skills_used": {},
+    "read_log": [],
+    "approved_deviations": [],
+    "skillEvidence": [],
+    "skillEvidenceIndexByStepId": {},
+    "required_skills": {
+      "video-course": {
+        "requestedAt": "2026-04-09T10:07:41.722Z",
+        "used": false,
+        "autoMapped": true
+      },
+      "task-id": {
+        "requestedAt": "2026-04-09T10:05:36.106Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "tool-use-id": {
+        "requestedAt": "2026-04-09T10:05:36.106Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "output-file": {
+        "requestedAt": "2026-04-09T10:05:36.106Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "status": {
+        "requestedAt": "2026-04-09T10:05:36.106Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "pipeline": {
+        "requestedAt": "2026-04-09T10:05:36.107Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "youtube-fetch": {
+        "requestedAt": "2026-04-09T10:05:36.107Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "summary": {
+        "requestedAt": "2026-04-09T10:05:36.107Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "task-notification": {
+        "requestedAt": "2026-04-09T10:05:36.107Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "taisun_agent": {
+        "requestedAt": "2026-04-09T10:12:24.554Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "research": {
+        "requestedAt": "2026-04-09T10:15:00.138Z",
+        "used": false,
+        "autoMapped": true
+      },
+      "stella-generate": {
+        "requestedAt": "2026-04-13T13:42:59.125Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "github": {
+        "requestedAt": "2026-04-13T14:21:10.171Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "matsuisayura-pixel": {
+        "requestedAt": "2026-04-13T14:21:10.171Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "stella-project": {
+        "requestedAt": "2026-04-13T14:21:10.171Z",
+        "used": false,
+        "autoMapped": false
+      }
+    }
+  },
+  "decisions": {
+    "assetReuse": []
+  },
+  "approvals": {
+    "deviations": []
+  },
+  "validations": {
+    "lastResults": []
+  },
+  "completed_phases": [],
+  "blockers": []
+}

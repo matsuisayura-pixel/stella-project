@@ -1,0 +1,26 @@
+{
+  "category": "file",
+  "description": "ファイル操作ツール群",
+  "source_servers": ["filesystem", "project-context"],
+  "tools": [
+    {"name": "file_read", "description": "ファイル読み込み"},
+    {"name": "file_write", "description": "ファイル書き込み"},
+    {"name": "file_create", "description": "ファイル作成"},
+    {"name": "file_delete", "description": "ファイル削除"},
+    {"name": "file_move", "description": "ファイル移動"},
+    {"name": "file_copy", "description": "ファイルコピー"},
+    {"name": "file_search", "description": "ファイル検索"},
+    {"name": "file_list", "description": "ディレクトリ一覧"},
+    {"name": "file_info", "description": "ファイル情報取得"},
+    {"name": "file_watch", "description": "ファイル監視"},
+    {"name": "dir_create", "description": "ディレクトリ作成"},
+    {"name": "dir_delete", "description": "ディレクトリ削除"},
+    {"name": "path_resolve", "description": "パス解決"},
+    {"name": "path_join", "description": "パス結合"},
+    {"name": "content_grep", "description": "内容検索"},
+    {"name": "content_replace", "description": "内容置換"},
+    {"name": "file_convert", "description": "ファイル変換"},
+    {"name": "file_compress", "description": "ファイル圧縮"}
+  ],
+  "count": 18
+}

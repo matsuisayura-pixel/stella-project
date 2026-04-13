@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "id": "b1888856-f423-460a-a595-688bd13f6e84",
+  "timestamp": "2026-04-09T10:23:36.850Z",
+  "files": [
+    {
+      "path": "stella\\content\\output\\20260409-194500__kanjou-hanashi-unki\\note.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  }
+}

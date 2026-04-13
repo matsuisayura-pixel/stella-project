@@ -1,0 +1,290 @@
+{
+  "_comment": "TAISUN v2.1 - defer_loading最適化版（コンテキスト70%削減）",
+  "mcpServers": {
+    "_comment_core": "=== 常時ロード（コア3個） ===",
+
+    "taisun-proxy": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["dist/proxy-mcp/server.js"],
+      "disabled": false,
+      "defer_loading": false,
+      "description": "TAISUN Proxy MCP (single entrypoint)",
+      "category": "system"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "disabled": false,
+      "defer_loading": false,
+      "description": "Playwright MCP - ブラウザ自動化",
+      "category": "browser-automation"
+    },
+    "open-websearch": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["open-websearch-mcp"],
+      "disabled": false,
+      "defer_loading": false,
+      "description": "無料検索（DuckDuckGo/Bing/Brave）",
+      "category": "search"
+    },
+
+    "line-bot": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp-servers/line-bot-mcp-server/dist/index.js"],
+      "env": {
+        "CHANNEL_ACCESS_TOKEN": "${LINE_CHANNEL_ACCESS_TOKEN}",
+        "DESTINATION_USER_ID": "${LINE_DESTINATION_USER_ID}"
+      },
+      "disabled": true,
+      "defer_loading": true,
+      "search_keywords": ["LINE", "ライン", "メッセージ送信", "プッシュ通知"],
+      "description": "LINE Bot MCP - メッセージ送信・リッチメニュー管理",
+      "category": "messaging"
+    },
+
+    "voice-ai": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp-servers/voice-ai-mcp-server/dist/index.js"],
+      "env": {
+        "TWILIO_ACCOUNT_SID": "${TWILIO_ACCOUNT_SID}",
+        "TWILIO_AUTH_TOKEN": "${TWILIO_AUTH_TOKEN}",
+        "TWILIO_PHONE_NUMBER": "${TWILIO_PHONE_NUMBER}",
+        "OPENAI_REALTIME_API_KEY": "${OPENAI_REALTIME_API_KEY}",
+        "OPENAI_REALTIME_MODEL": "${OPENAI_REALTIME_MODEL}",
+        "VOICE_WEBHOOK_PORT": "${VOICE_WEBHOOK_PORT}",
+        "VOICE_WEBHOOK_BASE_URL": "${VOICE_WEBHOOK_BASE_URL}"
+      },
+      "disabled": true,
+      "defer_loading": true,
+      "search_keywords": ["voice", "電話", "通話", "架電", "Twilio", "音声AI", "リアルタイム"],
+      "cost_warning": true,
+      "description": "Voice AI MCP - Twilio + OpenAI Realtime 音声通話AI",
+      "category": "voice"
+    },
+    "ai-sdr": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp-servers/ai-sdr-mcp-server/dist/index.js"],
+      "disabled": true,
+      "defer_loading": true,
+      "search_keywords": ["SDR", "営業", "リード", "スコアリング", "アウトリーチ", "パイプライン", "フォローアップ"],
+      "description": "AI SDR MCP - 自律営業パイプライン（リード管理・スコアリング・アウトリーチ）",
+      "category": "sales"
+    },
+
+    "_comment_deferred": "=== 遅延ロード（12個） ===",
+
+    "youtube": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-youtube"],
+      "disabled": true,
+      "defer_loading": true,
+      "search_keywords": ["youtube", "動画", "字幕"],
+      "description": "YouTube字幕ダウンロード (要: npm install -g mcp-youtube 後に有効化)",
+      "category": "media"
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["docs", "ドキュメント", "API", "最新"],
+      "description": "最新ドキュメント取得",
+      "category": "documentation"
+    },
+    "gpt-researcher": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["--from", "gpt-researcher-mcp", "gpt-researcher-mcp"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["research", "調査", "リサーチ", "レポート"],
+      "cost_warning": true,
+      "description": "深層リサーチ（APIコスト発生）",
+      "category": "research"
+    },
+    "figma": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--figma-api-key=${FIGMA_API_KEY}", "--stdio"],
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["figma", "デザイン", "UI"],
+      "description": "Figmaデザイン取得",
+      "category": "design"
+    },
+    "qdrant": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-qdrant"],
+      "env": {
+        "QDRANT_URL": "${QDRANT_URL:-http://localhost:6333}",
+        "COLLECTION_NAME": "${QDRANT_COLLECTION_NAME:-taisun_memory}",
+        "EMBEDDING_MODEL": "sentence-transformers/all-MiniLM-L6-v2"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["vector", "ベクトル", "検索", "memory"],
+      "description": "ベクトル検索・長期記憶",
+      "category": "database"
+    },
+    "chroma": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["chroma-mcp"],
+      "env": {
+        "CHROMA_PERSISTENCE_PATH": "./.chroma",
+        "EMBEDDING_FUNCTION": "default"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["embedding", "記憶", "永続化"],
+      "description": "ローカルベクトルDB",
+      "category": "memory"
+    },
+    "n8n-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@czlonkowski/n8n-mcp"],
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["workflow", "自動化", "n8n"],
+      "description": "ワークフロー自動化",
+      "category": "automation"
+    },
+    "apify": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@apify/mcp-server"],
+      "env": {
+        "APIFY_API_TOKEN": "${APIFY_API_TOKEN}"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["scrape", "SNS", "Instagram", "Twitter", "Amazon"],
+      "cost_warning": true,
+      "description": "SNS/検索/ECスクレイピング",
+      "category": "research"
+    },
+    "tavily": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "tavily-mcp"],
+      "env": {
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["tavily", "AI検索", "web検索"],
+      "cost_warning": true,
+      "description": "AI特化検索エンジン",
+      "category": "search"
+    },
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["step by step", "順番に", "論理的に"],
+      "description": "複雑な推論タスク用",
+      "category": "reasoning"
+    },
+    "mcp-memory-service": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-memory-service"],
+      "env": {
+        "MCP_MAX_RESPONSE_CHARS": "30000"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["memory", "記憶", "context"],
+      "description": "コンテキスト記憶",
+      "category": "memory"
+    },
+
+    "_comment_meta_ads": "=== Meta広告システム ===",
+
+    "meta-ads": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["meta-ads-mcp"],
+      "env": {
+        "META_ACCESS_TOKEN": "${META_ACCESS_TOKEN}",
+        "META_APP_SECRET": "${META_APP_SECRET}",
+        "META_AD_ACCOUNT_ID": "${META_AD_ACCOUNT_ID}"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["meta", "facebook", "instagram", "広告", "ads", "キャンペーン"],
+      "cost_warning": false,
+      "description": "Meta広告キャンペーン管理・分析・最適化",
+      "category": "marketing"
+    },
+    "facebook-ads-library": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "facebook-ads-library-mcp"],
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["競合", "ad library", "広告ライブラリ", "競合分析"],
+      "description": "Facebook Ad Library - 競合広告分析",
+      "category": "marketing"
+    },
+
+    "_comment_knowledge": "=== 知識管理システム ===",
+
+    "obsidian": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@cyanheads/obsidian-mcp-server"],
+      "env": {
+        "OBSIDIAN_API_KEY": "${OBSIDIAN_API_KEY}",
+        "OBSIDIAN_API_PORT": "27124",
+        "OBSIDIAN_VAULT_PATH": "~/Documents/ObsidianVaults/LP-Knowledge-System"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["obsidian", "ノート", "知識", "vault", "LP知識"],
+      "description": "Obsidian LP知識管理 - ノート読み書き・検索",
+      "category": "knowledge"
+    },
+
+    "_comment_sns_research": "=== SNSリサーチ ===",
+
+    "twitter-client": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "agent-twitter-client-mcp"],
+      "env": {
+        "AUTH_METHOD": "cookies",
+        "TWITTER_COOKIES": "${TWITTER_COOKIES}"
+      },
+      "disabled": false,
+      "defer_loading": true,
+      "search_keywords": ["twitter", "X", "ツイート", "SNS", "トレンド"],
+      "description": "Twitter/X Client - ツイート検索・取得・投稿（Cookie認証）",
+      "category": "sns-research"
+    },
+    "puppeteer": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "disabled": false,
+      "description": "Puppeteer MCP - Browser automation for web scraping and interaction. Enables reading JavaScript-rendered pages.",
+      "category": "browser"
+    }
+  }
+}

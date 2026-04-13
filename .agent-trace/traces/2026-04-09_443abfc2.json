@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "id": "443abfc2-f194-40c4-bcb5-ef9b831fddd9",
+  "timestamp": "2026-04-09T10:16:22.859Z",
+  "files": [
+    {
+      "path": "research\\runs\\20260409-192000__tamashii-mission-yamatono-jidai\\report.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  }
+}

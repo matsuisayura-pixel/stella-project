@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "id": "5b1f0fbe-fc86-47d4-9f84-df1b1827361f",
+  "timestamp": "2026-04-09T10:09:15.538Z",
+  "files": [
+    {
+      "path": "stella\\content\\samples\\note-sample-01.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  }
+}

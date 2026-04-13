@@ -1,0 +1,87 @@
+agent_name: backend-developer
+total_tasks: 0
+successful_tasks: 0
+failed_tasks: 0
+success_rate: 0
+avg_quality_score: 0
+avg_duration_ms: 0
+last_updated: 2025-11-04T00:00:00Z
+recent_tasks: []
+trends:
+  success_rate_trend: 0
+  quality_score_trend: 0
+  avg_duration_trend: 0
+specializations: {}
+omega_metrics:
+  performance_bounds:
+    min_quality_score: 56
+    min_success_rate: 0.8
+    max_latency_ms: 165000
+    worst_case:
+      quality_score: 56
+      success_rate: 0
+      latency_ms: 165000
+  dependencies:
+    omega: 12
+    little_omega: 11
+    coupling_ratio: 1.09
+    dependencies_list:
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Grep
+        - Glob
+        - Bash
+      agents: []
+      external:
+        - server-side
+        - Domain-Driven
+        - Server-Sent
+    coupling_health:
+      status: good
+      recommendation: ""
+  completion_probability:
+    base_omega: 0
+    by_complexity:
+      low: 0.95
+      medium: 0.865
+      high: 0.65
+    by_category:
+      implementation: 0.55
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+    confidence_interval: 0.05
+    sample_size: 1
+    prediction_accuracy:
+      total_predictions: 1
+      accurate_predictions: 0
+      accuracy_rate: 0
+learning_metrics:
+  learning_rate: 0.1
+  quality_trend:
+    direction: stable
+    rate: 0
+  success_trend:
+    direction: stable
+    rate: 0
+  specialization:
+    primary_category: implementation
+    specialization_score: 0
+    categories:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+metadata:
+  last_updated: 2025-11-06T09:13:43.870Z
+  schema_version: 1.0.0
+  omega_integration_date: 2025-11-06
+  passes_quality_gates:
+    min_quality: false
+    min_success_rate: false
+    acceptable_coupling: true
+  overall_health: fair

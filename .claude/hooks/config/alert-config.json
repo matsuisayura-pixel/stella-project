@@ -1,0 +1,34 @@
+{
+  "thresholds": {
+    "metricsFileSize": {
+      "warn": 30000,
+      "critical": 50000
+    },
+    "metricsEntryCount": {
+      "warn": 80,
+      "critical": 105
+    },
+    "sessionCompletionRate": {
+      "warn": 0.85,
+      "critical": 0.80
+    },
+    "hookProcessingTime": {
+      "warn": 1000,
+      "critical": 2000
+    },
+    "autoLoadTokens": {
+      "warn": 3000,
+      "critical": 5000
+    },
+    "blockRate": {
+      "warn": 0.10,
+      "critical": 0.20
+    }
+  },
+  "notifications": {
+    "console": true,
+    "file": true,
+    "slack": false,
+    "discord": false
+  }
+}

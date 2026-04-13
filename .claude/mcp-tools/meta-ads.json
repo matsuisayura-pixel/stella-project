@@ -1,0 +1,29 @@
+{
+  "category": "meta-ads",
+  "description": "Meta広告（Facebook/Instagram）管理ツール群",
+  "source_servers": ["meta-ads", "facebook-ads-library", "apify"],
+  "tools": [
+    {"name": "get_campaigns", "description": "キャンペーン一覧取得"},
+    {"name": "get_campaign", "description": "キャンペーン詳細取得"},
+    {"name": "create_campaign", "description": "キャンペーン作成"},
+    {"name": "update_campaign", "description": "キャンペーン更新"},
+    {"name": "get_adsets", "description": "広告セット一覧取得"},
+    {"name": "get_adset", "description": "広告セット詳細取得"},
+    {"name": "create_adset", "description": "広告セット作成"},
+    {"name": "update_adset", "description": "広告セット更新"},
+    {"name": "get_ads", "description": "広告一覧取得"},
+    {"name": "get_ad", "description": "広告詳細取得"},
+    {"name": "create_ad", "description": "広告作成"},
+    {"name": "update_ad", "description": "広告更新"},
+    {"name": "get_insights", "description": "パフォーマンスインサイト取得"},
+    {"name": "get_account_insights", "description": "アカウント全体のインサイト"},
+    {"name": "get_audiences", "description": "オーディエンス一覧取得"},
+    {"name": "create_audience", "description": "カスタムオーディエンス作成"},
+    {"name": "get_creatives", "description": "クリエイティブ一覧取得"},
+    {"name": "upload_image", "description": "画像アップロード"},
+    {"name": "upload_video", "description": "動画アップロード"},
+    {"name": "search_ad_library", "description": "Ad Library検索"},
+    {"name": "get_competitor_ads", "description": "競合広告取得"}
+  ],
+  "count": 21
+}

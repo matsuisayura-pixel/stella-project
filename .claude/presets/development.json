@@ -1,0 +1,31 @@
+{
+  "_comment": "Development preset: Core tools for coding, testing, debugging",
+  "disabledMcpServers": [
+    "figma",
+    "qdrant",
+    "chroma",
+    "n8n-mcp",
+    "meta-ads",
+    "facebook-ads-library",
+    "obsidian",
+    "twitter-client",
+    "mcp-memory-service",
+    "sequential-thinking",
+    "pexels",
+    "apify",
+    "tavily",
+    "voice-ai",
+    "ai-sdr",
+    "line-bot",
+    "gpt-researcher"
+  ],
+  "activeMcpCount": 6,
+  "activeMcpServers": [
+    "taisun-proxy",
+    "playwright",
+    "open-websearch",
+    "youtube",
+    "context7",
+    "praetorian"
+  ]
+}

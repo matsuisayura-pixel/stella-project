@@ -1,0 +1,32 @@
+{
+  "category": "development",
+  "description": "開発支援ツール群",
+  "source_servers": ["ide-integration", "playwright", "project-context"],
+  "tools": [
+    {"name": "code_lint", "description": "コードリント"},
+    {"name": "code_format", "description": "コードフォーマット"},
+    {"name": "code_analyze", "description": "コード分析"},
+    {"name": "code_refactor", "description": "リファクタリング"},
+    {"name": "code_suggest", "description": "コード提案"},
+    {"name": "code_complete", "description": "コード補完"},
+    {"name": "code_explain", "description": "コード説明"},
+    {"name": "test_run", "description": "テスト実行"},
+    {"name": "test_coverage", "description": "カバレッジ計測"},
+    {"name": "test_generate", "description": "テスト生成"},
+    {"name": "debug_start", "description": "デバッグ開始"},
+    {"name": "debug_breakpoint", "description": "ブレークポイント"},
+    {"name": "debug_step", "description": "ステップ実行"},
+    {"name": "build_run", "description": "ビルド実行"},
+    {"name": "build_watch", "description": "ビルド監視"},
+    {"name": "deps_check", "description": "依存関係チェック"},
+    {"name": "deps_update", "description": "依存関係更新"},
+    {"name": "security_scan", "description": "セキュリティスキャン"},
+    {"name": "browser_test", "description": "ブラウザテスト"},
+    {"name": "browser_screenshot", "description": "スクリーンショット"},
+    {"name": "api_test", "description": "APIテスト"},
+    {"name": "perf_measure", "description": "パフォーマンス計測"},
+    {"name": "docs_generate", "description": "ドキュメント生成"},
+    {"name": "changelog_create", "description": "変更ログ作成"}
+  ],
+  "count": 24
+}

@@ -1,0 +1,33 @@
+{
+  "category": "cloud",
+  "description": "クラウドサービス操作ツール群",
+  "source_servers": ["firebase", "supabase", "vercel", "docker"],
+  "tools": [
+    {"name": "cloud_deploy", "description": "デプロイ実行"},
+    {"name": "cloud_rollback", "description": "ロールバック"},
+    {"name": "cloud_logs", "description": "ログ取得"},
+    {"name": "cloud_metrics", "description": "メトリクス取得"},
+    {"name": "cloud_scale", "description": "スケーリング"},
+    {"name": "cloud_config", "description": "設定管理"},
+    {"name": "cloud_secrets", "description": "シークレット管理"},
+    {"name": "cloud_env", "description": "環境変数管理"},
+    {"name": "cloud_domains", "description": "ドメイン管理"},
+    {"name": "cloud_ssl", "description": "SSL証明書管理"},
+    {"name": "cloud_functions", "description": "Functions管理"},
+    {"name": "cloud_storage", "description": "ストレージ操作"},
+    {"name": "cloud_auth", "description": "認証管理"},
+    {"name": "cloud_users", "description": "ユーザー管理"},
+    {"name": "cloud_rules", "description": "セキュリティルール"},
+    {"name": "cloud_analytics", "description": "分析データ"},
+    {"name": "cloud_alerts", "description": "アラート設定"},
+    {"name": "cloud_status", "description": "ステータス確認"},
+    {"name": "cloud_regions", "description": "リージョン管理"},
+    {"name": "cloud_billing", "description": "課金情報"},
+    {"name": "cloud_quotas", "description": "クォータ確認"},
+    {"name": "cloud_iam", "description": "IAM管理"},
+    {"name": "cloud_networking", "description": "ネットワーク設定"},
+    {"name": "cloud_cdn", "description": "CDN設定"},
+    {"name": "cloud_preview", "description": "プレビュー環境"}
+  ],
+  "count": 25
+}

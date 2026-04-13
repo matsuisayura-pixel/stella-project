@@ -1,0 +1,18 @@
+{
+  "category": "sns",
+  "description": "SNS操作ツール群",
+  "source_servers": ["slack", "notion"],
+  "tools": [
+    {"name": "sns_post", "description": "投稿作成"},
+    {"name": "sns_schedule", "description": "投稿スケジュール"},
+    {"name": "sns_analyze", "description": "分析"},
+    {"name": "sns_engage", "description": "エンゲージメント"},
+    {"name": "sns_followers", "description": "フォロワー情報"},
+    {"name": "sns_trends", "description": "トレンド取得"},
+    {"name": "sns_hashtags", "description": "ハッシュタグ分析"},
+    {"name": "sns_mentions", "description": "メンション取得"},
+    {"name": "sns_dm", "description": "DM送信"},
+    {"name": "sns_report", "description": "レポート生成"}
+  ],
+  "count": 10
+}

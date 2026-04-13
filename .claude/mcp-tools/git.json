@@ -1,0 +1,28 @@
+{
+  "category": "git",
+  "description": "Git操作ツール群",
+  "source_servers": ["github-enhanced", "github", "gitlab"],
+  "tools": [
+    {"name": "git_status", "description": "リポジトリ状態確認"},
+    {"name": "git_diff", "description": "差分表示"},
+    {"name": "git_log", "description": "コミット履歴"},
+    {"name": "git_branch", "description": "ブランチ操作"},
+    {"name": "git_checkout", "description": "ブランチ切替"},
+    {"name": "git_commit", "description": "コミット作成"},
+    {"name": "git_push", "description": "リモートへプッシュ"},
+    {"name": "git_pull", "description": "リモートからプル"},
+    {"name": "git_merge", "description": "ブランチマージ"},
+    {"name": "git_rebase", "description": "リベース"},
+    {"name": "git_stash", "description": "変更の一時保存"},
+    {"name": "git_tag", "description": "タグ操作"},
+    {"name": "git_blame", "description": "行ごとの変更者表示"},
+    {"name": "git_show", "description": "コミット詳細表示"},
+    {"name": "git_reset", "description": "変更のリセット"},
+    {"name": "git_cherry_pick", "description": "特定コミットの適用"},
+    {"name": "git_clone", "description": "リポジトリクローン"},
+    {"name": "git_remote", "description": "リモート操作"},
+    {"name": "git_fetch", "description": "リモート情報取得"},
+    {"name": "git_submodule", "description": "サブモジュール操作"}
+  ],
+  "count": 20
+}

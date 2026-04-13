@@ -1,0 +1,106 @@
+{
+  "name": "mega-research-plus",
+  "version": "1.0.0",
+  "description": "8つの検索ソースを統合した最強リサーチシステム",
+  "apis": {
+    "tavily": {
+      "name": "Tavily",
+      "description": "AI検索特化、高精度セマンティック検索",
+      "env_key": "TAVILY_API_KEY",
+      "endpoint": "https://api.tavily.com/search",
+      "rate_limit": "1000 req/month (Free)",
+      "priority": 1
+    },
+    "serpapi": {
+      "name": "SerpAPI",
+      "description": "Google検索結果取得、SERP分析",
+      "env_key": "SERPAPI_KEY",
+      "endpoint": "https://serpapi.com/search.json",
+      "rate_limit": "100 req/month (Free)",
+      "priority": 2
+    },
+    "brave": {
+      "name": "Brave Search",
+      "description": "プライバシー重視、広範囲Web検索",
+      "env_key": "BRAVE_API_KEY",
+      "endpoint": "https://api.search.brave.com/res/v1/web/search",
+      "rate_limit": "2000 req/month (Free)",
+      "priority": 3
+    },
+    "newsapi": {
+      "name": "NewsAPI",
+      "description": "ニュース集約、最新記事取得",
+      "env_key": "NEWSAPI_KEY",
+      "endpoint": "https://newsapi.org/v2/everything",
+      "rate_limit": "100 req/day (Free)",
+      "priority": 4
+    },
+    "perplexity": {
+      "name": "Perplexity",
+      "description": "AI検索+要約、引用付き回答",
+      "env_key": "PERPLEXITY_API_KEY",
+      "endpoint": "https://api.perplexity.ai/chat/completions",
+      "rate_limit": "課金制",
+      "priority": 5
+    },
+    "open_websearch": {
+      "name": "Open WebSearch (MCP)",
+      "description": "DuckDuckGo/Bing/Brave検索（APIキー不要）",
+      "mcp_server": "open-websearch",
+      "rate_limit": "無制限",
+      "priority": 6
+    },
+    "twitter": {
+      "name": "Twitter/X (MCP)",
+      "description": "ツイート取得・検索",
+      "mcp_server": "twitter-client",
+      "env_key": "TWITTER_COOKIES",
+      "rate_limit": "Cookie認証",
+      "priority": 7
+    },
+    "websearch": {
+      "name": "WebSearch (組み込み)",
+      "description": "Claude Code組み込み検索（APIキー不要）",
+      "tool": "WebSearch",
+      "rate_limit": "制限あり",
+      "priority": 8
+    },
+    "xai": {
+      "name": "xAI Grok",
+      "description": "X/Twitterリアルタイム検索・最新情報・トレンド取得",
+      "env_key": "XAI_API_KEY",
+      "endpoint": "https://api.x.ai/v1/chat/completions",
+      "model": "grok-3",
+      "rate_limit": "課金制",
+      "priority": 9,
+      "features": ["live_search", "x_search", "real_time"]
+    }
+  },
+  "modes": {
+    "deep": {
+      "description": "全API使用した徹底調査",
+      "apis": ["tavily", "serpapi", "brave", "newsapi", "perplexity", "twitter", "xai"],
+      "max_results": 50
+    },
+    "quick": {
+      "description": "高速検索（2-3秒）",
+      "apis": ["tavily", "brave", "websearch"],
+      "max_results": 15
+    },
+    "news": {
+      "description": "ニュース特化",
+      "apis": ["newsapi", "perplexity", "serpapi"],
+      "max_results": 20
+    },
+    "social": {
+      "description": "SNS・コミュニティ特化",
+      "apis": ["twitter", "open_websearch", "brave"],
+      "max_results": 30
+    },
+    "free": {
+      "description": "APIキー不要（配布向け）",
+      "apis": ["websearch", "open_websearch"],
+      "max_results": 20
+    }
+  }
+}

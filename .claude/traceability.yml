@@ -1,0 +1,141 @@
+# Traceability Matrix（トレーサビリティ対応表）
+# DoD → 変更点 → テスト → 証跡（Evidence）の対応を追跡
+
+version: "1.0.0"
+updated_at: "2026-01-07T17:00:00+09:00"
+
+# 説明
+# このファイルは各DoDが「どの変更」「どのテスト」「どの証跡」で担保されているかを追跡する
+# 自動生成・更新: npm run traceability:gen
+
+# ========================================
+# 現在のタスク: Memory++ アップグレード
+# ========================================
+
+current_task:
+  name: "Memory++ アップグレード"
+  started_at: "2026-01-07"
+  contract_ref: ".claude/task_contract.md"
+
+  dod_items:
+    - id: DOD-001
+      description: "pins.md 作成・運用開始"
+      status: completed
+      changes:
+        - file: ".claude/pins.md"
+          type: created
+          summary: "ピン留め台帳の新規作成"
+      tests: []
+      evidence:
+        - type: file_exists
+          path: ".claude/pins.md"
+
+    - id: DOD-002
+      description: "traceability.yml 作成"
+      status: in_progress
+      changes:
+        - file: ".claude/traceability.yml"
+          type: created
+          summary: "トレーサビリティ対応表の新規作成"
+      tests: []
+      evidence:
+        - type: file_exists
+          path: ".claude/traceability.yml"
+
+    - id: DOD-003
+      description: "contract-lint.ts 実装・CIゲート化"
+      status: pending
+      changes: []
+      tests: []
+      evidence: []
+
+    - id: DOD-004
+      description: "mistake-to-test.ts 実装"
+      status: pending
+      changes: []
+      tests: []
+      evidence: []
+
+    - id: DOD-005
+      description: "package.json にコマンド追加"
+      status: pending
+      changes: []
+      tests: []
+      evidence: []
+
+    - id: DOD-006
+      description: "ドキュメント作成"
+      status: pending
+      changes: []
+      tests: []
+      evidence: []
+
+    - id: DOD-007
+      description: "テスト通過"
+      status: pending
+      changes: []
+      tests:
+        - name: "npm test"
+          expected: "All tests pass"
+      evidence: []
+
+# ========================================
+# 過去のタスク（アーカイブ）
+# ========================================
+
+archived_tasks:
+  - name: "Memory Enhancement（記憶強化）"
+    completed_at: "2026-01-07"
+    dod_items:
+      - id: DOD-MEM-001
+        description: "MCP Memory統合実装"
+        status: completed
+        changes:
+          - file: "src/proxy-mcp/memory/directive-sync.ts"
+            type: created
+        tests: []
+        evidence:
+          - type: file_exists
+            path: "src/proxy-mcp/memory/directive-sync.ts"
+
+      - id: DOD-MEM-002
+        description: "セッション開始ブリーフィング実装"
+        status: completed
+        changes:
+          - file: "scripts/session-briefing.ts"
+            type: created
+        tests:
+          - name: "npm run briefing"
+            expected: "Shows briefing output"
+        evidence:
+          - type: command_success
+            command: "npm run briefing"
+
+# ========================================
+# 不変ルールの検証状態
+# ========================================
+
+invariants:
+  - id: INV-001
+    name: "proxy-only"
+    description: ".mcp.json が taisun-proxy 以外を有効化していない"
+    last_verified: "2026-01-07"
+    status: pass
+
+  - id: INV-002
+    name: "日本語ログ既定"
+    description: "locale未指定でja、Issueログに英語テンプレが混入しない"
+    last_verified: "2026-01-07"
+    status: pass
+
+  - id: INV-003
+    name: "secrets非露出"
+    description: "secretsがログ/issue/traceabilityに出ない"
+    last_verified: "2026-01-07"
+    status: pass
+
+  - id: INV-004
+    name: "大出力外部化"
+    description: "生ログ/全文を会話/Issueに貼らない"
+    last_verified: "2026-01-07"
+    status: pass

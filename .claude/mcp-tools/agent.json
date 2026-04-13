@@ -1,0 +1,26 @@
+{
+  "category": "agent",
+  "description": "エージェント操作ツール群",
+  "source_servers": ["taiyou", "taiyou-mcp"],
+  "tools": [
+    {"name": "agent_coordinate", "description": "エージェント統括"},
+    {"name": "agent_delegate", "description": "タスク委譲"},
+    {"name": "agent_execute", "description": "エージェント実行"},
+    {"name": "agent_status", "description": "状態確認"},
+    {"name": "agent_list", "description": "エージェント一覧"},
+    {"name": "agent_select", "description": "エージェント選択"},
+    {"name": "agent_configure", "description": "設定変更"},
+    {"name": "agent_reflect", "description": "振り返り実行"},
+    {"name": "agent_learn", "description": "学習実行"},
+    {"name": "agent_memory_read", "description": "メモリ読取"},
+    {"name": "agent_memory_write", "description": "メモリ書込"},
+    {"name": "agent_parallel", "description": "並列実行"},
+    {"name": "agent_sequence", "description": "順次実行"},
+    {"name": "agent_retry", "description": "リトライ"},
+    {"name": "agent_fallback", "description": "フォールバック"},
+    {"name": "agent_timeout", "description": "タイムアウト設定"},
+    {"name": "agent_cancel", "description": "キャンセル"},
+    {"name": "agent_log", "description": "ログ取得"}
+  ],
+  "count": 18
+}

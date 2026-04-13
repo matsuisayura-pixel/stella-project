@@ -1,0 +1,27 @@
+# 環境変数（APIキー）
+.env
+.env.local
+.env.*.local
+
+# 開発ツール
+node_modules/
+.DS_Store
+Thumbs.db
+
+# ログ
+stella/logs/
+*.log
+
+# 一時ファイル
+.claude/temp/
+.claude/hooks/data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# yt-dlp キャッシュ
+*.vtt

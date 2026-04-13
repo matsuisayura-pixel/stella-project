@@ -1,0 +1,221 @@
+# Agentic Vision ワークフローテンプレート
+
+# ============================================
+# Kindle表紙市場分析ワークフロー
+# ============================================
+kindle_cover_analysis:
+  name: "Kindle表紙市場分析"
+  description: "Amazon Kindleランキング上位の表紙を分析し、勝ちパターンを特定"
+
+  steps:
+    - name: "データ収集"
+      action: "collect"
+      params:
+        source: "amazon_kindle"
+        category: "${category}"  # 例: ビジネス書、自己啓発
+        count: 100
+        output_dir: "./collected_covers"
+
+    - name: "一括分析"
+      action: "batch_analyze"
+      params:
+        input_dir: "./collected_covers"
+        analysis_type: "comprehensive"
+        content_type: "kindle_cover"
+        output: "./analysis_results.json"
+
+    - name: "パターン抽出"
+      action: "extract_patterns"
+      params:
+        input: "./analysis_results.json"
+        extract:
+          - "color_palette"      # 主要色パレット
+          - "typography"         # フォント傾向
+          - "layout_patterns"    # レイアウトパターン
+          - "element_frequency"  # 要素出現頻度
+
+    - name: "レポート生成"
+      action: "generate_report"
+      params:
+        format: "markdown"
+        include:
+          - "統計サマリー"
+          - "勝ちパターンTOP5"
+          - "ジャンル別傾向"
+          - "推奨プロンプトテンプレート"
+
+  outputs:
+    - "./market_analysis_report.md"
+    - "./winning_prompts.json"
+    - "./color_palettes.json"
+
+# ============================================
+# 漫画ページ分析ワークフロー
+# ============================================
+manga_page_analysis:
+  name: "漫画ページ分析"
+  description: "漫画のコマ割り、演出技法、スタイルを分析"
+
+  steps:
+    - name: "ページ収集"
+      action: "collect"
+      params:
+        source: "custom_url"
+        urls: "${manga_page_urls}"
+        output_dir: "./manga_pages"
+
+    - name: "パネル検出"
+      action: "analyze"
+      params:
+        analysis_type: "composition"
+        custom_criteria:
+          - "コマ数とサイズ比率"
+          - "視線誘導フロー"
+          - "見せゴマの特定"
+          - "ページ内リズム"
+
+    - name: "スタイル分析"
+      action: "analyze"
+      params:
+        analysis_type: "elements"
+        custom_criteria:
+          - "線の太さ・強弱"
+          - "スクリーントーン使用"
+          - "効果線パターン"
+          - "吹き出し形状"
+
+    - name: "キャラクター分析"
+      action: "analyze"
+      params:
+        custom_criteria:
+          - "表情パターン"
+          - "アングル分布"
+          - "デフォルメ度"
+
+  outputs:
+    - "./panel_layouts.json"
+    - "./style_guide.md"
+    - "./character_patterns.json"
+
+# ============================================
+# 動画サムネイル最適化ワークフロー
+# ============================================
+video_thumbnail_optimization:
+  name: "動画サムネイル最適化"
+  description: "YouTubeサムネイルを分析し、CTR向上パターンを特定"
+
+  steps:
+    - name: "サムネイル収集"
+      action: "collect"
+      params:
+        source: "youtube"
+        query: "${search_query}"
+        count: 100
+        output_dir: "./thumbnails"
+
+    - name: "エンゲージメント相関分析"
+      action: "correlate"
+      params:
+        visual_features:
+          - "顔の有無"
+          - "表情タイプ"
+          - "テキスト量"
+          - "色彩傾向"
+        engagement_metrics:
+          - "views"
+          - "likes"
+          - "click_through_rate"
+
+    - name: "A/Bテストシミュレーション"
+      action: "simulate_ab"
+      params:
+        test_variations:
+          - "with_face_vs_without"
+          - "text_heavy_vs_minimal"
+          - "warm_colors_vs_cool"
+
+  outputs:
+    - "./thumbnail_analysis.json"
+    - "./ctr_optimization_guide.md"
+    - "./ab_test_recommendations.json"
+
+# ============================================
+# LP（ランディングページ）分析ワークフロー
+# ============================================
+lp_analysis:
+  name: "LP分析"
+  description: "ランディングページのファーストビューを分析"
+
+  steps:
+    - name: "スクリーンショット収集"
+      action: "screenshot"
+      params:
+        urls: "${lp_urls}"
+        viewport: "1920x1080"
+        output_dir: "./lp_screenshots"
+
+    - name: "ヒーローセクション分析"
+      action: "analyze"
+      params:
+        analysis_type: "comprehensive"
+        content_type: "lp_hero"
+        custom_criteria:
+          - "CTAボタンの視認性"
+          - "信頼性要素"
+          - "価値提案の明確さ"
+          - "モバイル対応度"
+
+    - name: "コンバージョン要素評価"
+      action: "evaluate"
+      params:
+        checklist:
+          - "CTAの色コントラスト"
+          - "フォームの見やすさ"
+          - "社会的証明の有無"
+          - "緊急性要素"
+
+  outputs:
+    - "./lp_analysis_report.md"
+    - "./conversion_checklist.json"
+    - "./improvement_suggestions.json"
+
+# ============================================
+# 品質評価ループワークフロー
+# ============================================
+quality_evaluation_loop:
+  name: "品質評価ループ"
+  description: "生成画像の品質を評価し、自動改善提案"
+
+  steps:
+    - name: "初期評価"
+      action: "analyze"
+      params:
+        analysis_type: "quality"
+        thresholds:
+          contrast_ratio: 4.5
+          thumbnail_visibility: 0.8
+          differentiation_score: 0.7
+
+    - name: "判定"
+      action: "evaluate"
+      params:
+        pass_criteria:
+          all_above_threshold: true
+
+    - name: "改善提案"
+      action: "suggest_improvements"
+      params:
+        if_failed:
+          - "コントラスト調整パラメータ"
+          - "フォントサイズ調整"
+          - "色彩変更提案"
+
+    - name: "再生成プロンプト生成"
+      action: "generate_prompt"
+      params:
+        incorporate_feedback: true
+        output: "./improved_prompt.txt"
+
+  loop:
+    max_iterations: 3
+    exit_condition: "all_thresholds_passed"

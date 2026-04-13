@@ -1,0 +1,30 @@
+{
+  "_comment": "Research preset: Deep research, web search, SNS analysis tools",
+  "disabledMcpServers": [
+    "figma",
+    "qdrant",
+    "chroma",
+    "n8n-mcp",
+    "meta-ads",
+    "facebook-ads-library",
+    "mcp-memory-service",
+    "sequential-thinking",
+    "pexels",
+    "voice-ai",
+    "ai-sdr",
+    "line-bot"
+  ],
+  "activeMcpCount": 10,
+  "activeMcpServers": [
+    "taisun-proxy",
+    "playwright",
+    "open-websearch",
+    "youtube",
+    "context7",
+    "gpt-researcher",
+    "apify",
+    "tavily",
+    "twitter-client",
+    "obsidian"
+  ]
+}

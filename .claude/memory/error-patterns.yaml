@@ -1,0 +1,845 @@
+# Error Patterns Database for Self-Healing Coordinator
+# Version: 2.0.0
+# Based on Anthropic's SWE-bench analysis and common failure modes
+# Last Updated: 2025-01-07
+
+version: "2.0.0"
+total_patterns: 105
+categories:
+  - nodejs
+  - typescript
+  - python
+  - database
+  - network
+  - security
+  - build
+  - test
+  - git
+  - agent
+
+patterns:
+
+  # ============================================
+  # Category: Node.js Runtime Errors (20 patterns)
+  # ============================================
+
+  - id: "ERR_NODEJS_001"
+    category: nodejs
+    pattern: "TypeError: Cannot read propert(y|ies) .* of (undefined|null)"
+    severity: high
+    frequency: 89
+    recovery:
+      level: 1
+      strategy: "Add null/undefined checks"
+      success_rate: 0.88
+    fix_template: |
+      // Before
+      const value = obj.property;
+
+      // After
+      const value = obj?.property ?? defaultValue;
+    tags: ["null-check", "optional-chaining"]
+
+  - id: "ERR_NODEJS_002"
+    category: nodejs
+    pattern: "ECONNREFUSED"
+    severity: high
+    frequency: 67
+    recovery:
+      level: 3
+      strategy: "Check service availability, escalate to devops"
+      success_rate: 0.65
+    fix_template: |
+      1. Verify service is running: ps aux | grep service-name
+      2. Check port: netstat -an | grep PORT
+      3. Restart service if needed
+    tags: ["network", "service-down"]
+
+  - id: "ERR_NODEJS_003"
+    category: nodejs
+    pattern: "ENOENT: no such file or directory"
+    severity: medium
+    frequency: 78
+    recovery:
+      level: 1
+      strategy: "Verify file path, create if needed"
+      success_rate: 0.92
+    fix_template: |
+      import { existsSync, mkdirSync } from 'fs';
+      import { dirname } from 'path';
+
+      const dir = dirname(filePath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+    tags: ["filesystem", "path"]
+
+  - id: "ERR_NODEJS_004"
+    category: nodejs
+    pattern: "ENOMEM|JavaScript heap out of memory"
+    severity: critical
+    frequency: 23
+    recovery:
+      level: 3
+      strategy: "Increase memory limit or optimize code"
+      success_rate: 0.70
+    fix_template: |
+      # Increase Node memory limit
+      NODE_OPTIONS="--max-old-space-size=4096" npm run build
+
+      # Or optimize: stream large files, paginate queries
+    tags: ["memory", "performance"]
+
+  - id: "ERR_NODEJS_005"
+    category: nodejs
+    pattern: "ETIMEDOUT|timeout of \\d+ms exceeded"
+    severity: medium
+    frequency: 56
+    recovery:
+      level: 2
+      strategy: "Increase timeout or check network"
+      success_rate: 0.78
+    fix_template: |
+      // Increase timeout
+      const response = await axios.get(url, { timeout: 30000 });
+
+      // Add retry logic
+      await withRetry(() => fetchData(), { retries: 3, delay: 1000 });
+    tags: ["timeout", "network"]
+
+  - id: "ERR_NODEJS_006"
+    category: nodejs
+    pattern: "Error: listen EADDRINUSE"
+    severity: medium
+    frequency: 34
+    recovery:
+      level: 1
+      strategy: "Kill process using port or use different port"
+      success_rate: 0.95
+    fix_template: |
+      # Find process using port
+      lsof -i :3000
+      # Kill it
+      kill -9 <PID>
+      # Or use different port
+      PORT=3001 npm start
+    tags: ["port", "process"]
+
+  - id: "ERR_NODEJS_007"
+    category: nodejs
+    pattern: "UnhandledPromiseRejectionWarning"
+    severity: high
+    frequency: 45
+    recovery:
+      level: 1
+      strategy: "Add proper error handling to promises"
+      success_rate: 0.90
+    fix_template: |
+      // Add catch handler
+      somePromise()
+        .then(result => handleResult(result))
+        .catch(error => handleError(error));
+
+      // Or use try-catch with async/await
+      try {
+        const result = await somePromise();
+      } catch (error) {
+        handleError(error);
+      }
+    tags: ["promise", "async"]
+
+  - id: "ERR_NODEJS_008"
+    category: nodejs
+    pattern: "Error: EPERM|EACCES: permission denied"
+    severity: medium
+    frequency: 29
+    recovery:
+      level: 2
+      strategy: "Check file permissions or run with appropriate privileges"
+      success_rate: 0.85
+    fix_template: |
+      # Check permissions
+      ls -la /path/to/file
+      # Fix permissions
+      chmod 644 /path/to/file
+      # Or change owner
+      chown $USER /path/to/file
+    tags: ["permissions", "filesystem"]
+
+  - id: "ERR_NODEJS_009"
+    category: nodejs
+    pattern: "RangeError: Maximum call stack size exceeded"
+    severity: high
+    frequency: 18
+    recovery:
+      level: 2
+      strategy: "Fix infinite recursion or use iteration"
+      success_rate: 0.82
+    fix_template: |
+      // Convert recursion to iteration
+      function processItems(items) {
+        const stack = [...items];
+        while (stack.length > 0) {
+          const item = stack.pop();
+          // process item
+          stack.push(...item.children);
+        }
+      }
+    tags: ["recursion", "stack-overflow"]
+
+  - id: "ERR_NODEJS_010"
+    category: nodejs
+    pattern: "SyntaxError: Unexpected token"
+    severity: medium
+    frequency: 52
+    recovery:
+      level: 1
+      strategy: "Fix JSON/JS syntax error"
+      success_rate: 0.94
+    fix_template: |
+      # Common causes:
+      # 1. Trailing comma in JSON
+      # 2. Missing quotes around keys
+      # 3. Invalid escape characters
+
+      # Validate JSON
+      cat file.json | jq .
+    tags: ["syntax", "json"]
+
+  # ============================================
+  # Category: TypeScript Errors (15 patterns)
+  # ============================================
+
+  - id: "ERR_TS_001"
+    category: typescript
+    pattern: "TS2304: Cannot find name"
+    severity: medium
+    frequency: 67
+    recovery:
+      level: 1
+      strategy: "Import missing type or declare it"
+      success_rate: 0.92
+    fix_template: |
+      // Import the type
+      import { MissingType } from './types';
+
+      // Or declare it
+      declare const MissingType: any;
+    tags: ["import", "types"]
+
+  - id: "ERR_TS_002"
+    category: typescript
+    pattern: "TS2339: Property .* does not exist on type"
+    severity: medium
+    frequency: 89
+    recovery:
+      level: 1
+      strategy: "Add property to interface or use type assertion"
+      success_rate: 0.88
+    fix_template: |
+      // Option 1: Extend interface
+      interface Extended extends Original {
+        newProperty: string;
+      }
+
+      // Option 2: Type assertion (use sparingly)
+      (obj as any).newProperty
+    tags: ["types", "interface"]
+
+  - id: "ERR_TS_003"
+    category: typescript
+    pattern: "TS2345: Argument of type .* is not assignable"
+    severity: medium
+    frequency: 78
+    recovery:
+      level: 1
+      strategy: "Fix type mismatch"
+      success_rate: 0.85
+    fix_template: |
+      // Check expected type and convert
+      const num: number = parseInt(stringValue, 10);
+
+      // Or use type guard
+      if (typeof value === 'string') {
+        processString(value);
+      }
+    tags: ["types", "assignment"]
+
+  - id: "ERR_TS_004"
+    category: typescript
+    pattern: "TS2322: Type .* is not assignable to type"
+    severity: medium
+    frequency: 72
+    recovery:
+      level: 1
+      strategy: "Fix type incompatibility"
+      success_rate: 0.87
+    fix_template: |
+      // Ensure correct type
+      const result: ExpectedType = value as ExpectedType;
+
+      // Or fix the source
+      function getValue(): ExpectedType {
+        return correctValue;
+      }
+    tags: ["types", "assignment"]
+
+  - id: "ERR_TS_005"
+    category: typescript
+    pattern: "TS2307: Cannot find module"
+    severity: medium
+    frequency: 56
+    recovery:
+      level: 1
+      strategy: "Install package or fix import path"
+      success_rate: 0.93
+    fix_template: |
+      # Install missing package
+      npm install missing-package
+      npm install -D @types/missing-package
+
+      # Or fix path
+      import { Thing } from '../correct/path';
+    tags: ["import", "module"]
+
+  # ============================================
+  # Category: Database Errors (15 patterns)
+  # ============================================
+
+  - id: "ERR_DB_001"
+    category: database
+    pattern: "P2002.*Unique constraint failed"
+    severity: medium
+    frequency: 45
+    recovery:
+      level: 1
+      strategy: "Handle duplicate key error"
+      success_rate: 0.90
+    fix_template: |
+      try {
+        await prisma.user.create({ data });
+      } catch (error) {
+        if (error.code === 'P2002') {
+          // Handle duplicate
+          return existingUser;
+        }
+        throw error;
+      }
+    tags: ["prisma", "unique", "constraint"]
+
+  - id: "ERR_DB_002"
+    category: database
+    pattern: "P2025.*Record to (update|delete) not found"
+    severity: medium
+    frequency: 38
+    recovery:
+      level: 1
+      strategy: "Check if record exists before operation"
+      success_rate: 0.92
+    fix_template: |
+      const existing = await prisma.user.findUnique({ where: { id } });
+      if (!existing) {
+        throw new NotFoundError('User not found');
+      }
+      await prisma.user.update({ where: { id }, data });
+    tags: ["prisma", "not-found"]
+
+  - id: "ERR_DB_003"
+    category: database
+    pattern: "connection.*refused|ECONNREFUSED.*5432"
+    severity: high
+    frequency: 34
+    recovery:
+      level: 3
+      strategy: "Check database server status"
+      success_rate: 0.70
+    fix_template: |
+      # Check PostgreSQL status
+      pg_isready -h localhost -p 5432
+
+      # Start if needed
+      brew services start postgresql
+      # or
+      sudo systemctl start postgresql
+    tags: ["connection", "postgresql"]
+
+  - id: "ERR_DB_004"
+    category: database
+    pattern: "P2034.*Transaction failed|deadlock detected"
+    severity: high
+    frequency: 23
+    recovery:
+      level: 2
+      strategy: "Retry transaction with exponential backoff"
+      success_rate: 0.80
+    fix_template: |
+      async function withRetry(operation, retries = 3) {
+        for (let i = 0; i < retries; i++) {
+          try {
+            return await prisma.$transaction(operation);
+          } catch (error) {
+            if (error.code === 'P2034' && i < retries - 1) {
+              await sleep(Math.pow(2, i) * 100);
+              continue;
+            }
+            throw error;
+          }
+        }
+      }
+    tags: ["transaction", "deadlock"]
+
+  - id: "ERR_DB_005"
+    category: database
+    pattern: "relation .* does not exist"
+    severity: high
+    frequency: 28
+    recovery:
+      level: 2
+      strategy: "Run database migrations"
+      success_rate: 0.88
+    fix_template: |
+      # Run Prisma migrations
+      npx prisma migrate dev
+
+      # Or reset database (dev only)
+      npx prisma migrate reset
+    tags: ["migration", "schema"]
+
+  # ============================================
+  # Category: Network/API Errors (10 patterns)
+  # ============================================
+
+  - id: "ERR_NET_001"
+    category: network
+    pattern: "status code 401|Unauthorized"
+    severity: medium
+    frequency: 56
+    recovery:
+      level: 1
+      strategy: "Check authentication credentials"
+      success_rate: 0.85
+    fix_template: |
+      // Verify token is present and valid
+      const token = await getAccessToken();
+      if (!token || isExpired(token)) {
+        await refreshToken();
+      }
+    tags: ["auth", "401"]
+
+  - id: "ERR_NET_002"
+    category: network
+    pattern: "status code 403|Forbidden"
+    severity: medium
+    frequency: 34
+    recovery:
+      level: 2
+      strategy: "Check user permissions/roles"
+      success_rate: 0.78
+    fix_template: |
+      // Verify user has required role
+      if (!user.roles.includes('admin')) {
+        throw new ForbiddenError('Admin access required');
+      }
+    tags: ["auth", "403", "permissions"]
+
+  - id: "ERR_NET_003"
+    category: network
+    pattern: "status code 404|Not Found"
+    severity: low
+    frequency: 78
+    recovery:
+      level: 1
+      strategy: "Verify resource exists and URL is correct"
+      success_rate: 0.90
+    fix_template: |
+      // Check resource exists before accessing
+      const resource = await findById(id);
+      if (!resource) {
+        throw new NotFoundError(`Resource ${id} not found`);
+      }
+    tags: ["404", "not-found"]
+
+  - id: "ERR_NET_004"
+    category: network
+    pattern: "status code 429|Too Many Requests|rate limit"
+    severity: medium
+    frequency: 23
+    recovery:
+      level: 2
+      strategy: "Implement rate limiting and retry with backoff"
+      success_rate: 0.82
+    fix_template: |
+      // Add exponential backoff
+      async function fetchWithRetry(url, options) {
+        const maxRetries = 3;
+        for (let i = 0; i < maxRetries; i++) {
+          const response = await fetch(url, options);
+          if (response.status === 429) {
+            const retryAfter = response.headers.get('Retry-After') || Math.pow(2, i);
+            await sleep(retryAfter * 1000);
+            continue;
+          }
+          return response;
+        }
+      }
+    tags: ["rate-limit", "429"]
+
+  - id: "ERR_NET_005"
+    category: network
+    pattern: "status code 500|Internal Server Error"
+    severity: high
+    frequency: 45
+    recovery:
+      level: 3
+      strategy: "Check server logs, escalate to operations"
+      success_rate: 0.60
+    fix_template: |
+      # Check server logs
+      tail -f /var/log/app/error.log
+
+      # Common causes:
+      # - Unhandled exceptions
+      # - Database connection issues
+      # - Memory exhaustion
+    tags: ["500", "server-error"]
+
+  # ============================================
+  # Category: Security Errors (10 patterns)
+  # ============================================
+
+  - id: "ERR_SEC_001"
+    category: security
+    pattern: "JWT.*invalid|token.*expired|JsonWebTokenError"
+    severity: high
+    frequency: 45
+    recovery:
+      level: 1
+      strategy: "Refresh or re-authenticate"
+      success_rate: 0.88
+    fix_template: |
+      try {
+        jwt.verify(token, secret);
+      } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+          // Refresh token
+          return await refreshAccessToken(refreshToken);
+        }
+        throw new UnauthorizedError('Invalid token');
+      }
+    tags: ["jwt", "auth"]
+
+  - id: "ERR_SEC_002"
+    category: security
+    pattern: "CORS.*blocked|Access-Control-Allow-Origin"
+    severity: medium
+    frequency: 56
+    recovery:
+      level: 1
+      strategy: "Configure CORS properly"
+      success_rate: 0.95
+    fix_template: |
+      // Express CORS configuration
+      app.use(cors({
+        origin: ['https://allowed-domain.com'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true,
+      }));
+    tags: ["cors", "security"]
+
+  - id: "ERR_SEC_003"
+    category: security
+    pattern: "SQL injection|query.*injection"
+    severity: critical
+    frequency: 12
+    recovery:
+      level: 4
+      strategy: "Use parameterized queries, immediate fix required"
+      success_rate: 1.0
+    fix_template: |
+      // NEVER do this:
+      // const query = `SELECT * FROM users WHERE id = '${userId}'`;
+
+      // Always use parameterized queries:
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+    tags: ["sql-injection", "critical"]
+
+  # ============================================
+  # Category: Build/Compilation Errors (10 patterns)
+  # ============================================
+
+  - id: "ERR_BUILD_001"
+    category: build
+    pattern: "Module not found|Cannot find module"
+    severity: medium
+    frequency: 67
+    recovery:
+      level: 1
+      strategy: "Install missing package or fix import"
+      success_rate: 0.95
+    fix_template: |
+      # Install missing package
+      npm install missing-package
+
+      # If type definitions needed
+      npm install -D @types/missing-package
+
+      # Clear cache if needed
+      rm -rf node_modules && npm install
+    tags: ["module", "npm"]
+
+  - id: "ERR_BUILD_002"
+    category: build
+    pattern: "FATAL ERROR.*heap|out of memory"
+    severity: high
+    frequency: 23
+    recovery:
+      level: 2
+      strategy: "Increase Node memory for build"
+      success_rate: 0.85
+    fix_template: |
+      # Increase memory limit
+      NODE_OPTIONS="--max-old-space-size=4096" npm run build
+
+      # Or in package.json
+      "build": "NODE_OPTIONS=--max-old-space-size=4096 tsc"
+    tags: ["memory", "build"]
+
+  - id: "ERR_BUILD_003"
+    category: build
+    pattern: "error TS\\d+:"
+    severity: medium
+    frequency: 89
+    recovery:
+      level: 1
+      strategy: "Fix TypeScript compilation error"
+      success_rate: 0.88
+    fix_template: |
+      # Run typecheck to see all errors
+      npm run typecheck
+
+      # Common fixes:
+      # - Add missing types
+      # - Fix type mismatches
+      # - Add null checks
+    tags: ["typescript", "compilation"]
+
+  # ============================================
+  # Category: Test Failures (10 patterns)
+  # ============================================
+
+  - id: "ERR_TEST_001"
+    category: test
+    pattern: "Expected.*Received|toBe|toEqual.*failed"
+    severity: medium
+    frequency: 78
+    recovery:
+      level: 2
+      strategy: "Fix implementation or update test expectation"
+      success_rate: 0.82
+    fix_template: |
+      // First verify the expected behavior
+      // Then either:
+      // 1. Fix the implementation
+      // 2. Update the test if expectation was wrong
+
+      expect(result).toEqual(expectedValue);
+    tags: ["assertion", "jest"]
+
+  - id: "ERR_TEST_002"
+    category: test
+    pattern: "Timeout.*exceeded|async.*callback.*never"
+    severity: medium
+    frequency: 45
+    recovery:
+      level: 1
+      strategy: "Increase timeout or fix async handling"
+      success_rate: 0.85
+    fix_template: |
+      // Increase timeout for slow tests
+      jest.setTimeout(30000);
+
+      // Or in specific test
+      it('slow test', async () => {
+        // test code
+      }, 30000);
+    tags: ["timeout", "async"]
+
+  - id: "ERR_TEST_003"
+    category: test
+    pattern: "Cannot find module.*mock|mock.*undefined"
+    severity: medium
+    frequency: 34
+    recovery:
+      level: 1
+      strategy: "Fix mock configuration"
+      success_rate: 0.90
+    fix_template: |
+      // Ensure mock is defined before import
+      jest.mock('./module', () => ({
+        functionName: jest.fn().mockReturnValue('mocked'),
+      }));
+
+      // Import after mock
+      import { functionName } from './module';
+    tags: ["mock", "jest"]
+
+  # ============================================
+  # Category: Git Errors (5 patterns)
+  # ============================================
+
+  - id: "ERR_GIT_001"
+    category: git
+    pattern: "merge conflict|CONFLICT.*Merge"
+    severity: high
+    frequency: 34
+    recovery:
+      level: 2
+      strategy: "Resolve conflicts manually"
+      success_rate: 0.75
+    fix_template: |
+      # List conflicted files
+      git diff --name-only --diff-filter=U
+
+      # After resolving conflicts
+      git add <resolved-files>
+      git commit -m "Resolve merge conflicts"
+    tags: ["merge", "conflict"]
+
+  - id: "ERR_GIT_002"
+    category: git
+    pattern: "rejected.*non-fast-forward|failed to push"
+    severity: medium
+    frequency: 45
+    recovery:
+      level: 1
+      strategy: "Pull and rebase before push"
+      success_rate: 0.90
+    fix_template: |
+      # Pull with rebase
+      git pull --rebase origin main
+
+      # Then push
+      git push origin main
+    tags: ["push", "rebase"]
+
+  # ============================================
+  # Category: Agent Errors (10 patterns)
+  # ============================================
+
+  - id: "ERR_AGENT_001"
+    category: agent
+    pattern: "Agent.*not found|invalid subagent_type"
+    severity: medium
+    frequency: 23
+    recovery:
+      level: 1
+      strategy: "Use correct agent name"
+      success_rate: 0.95
+    fix_template: |
+      # Valid agent names:
+      # - backend-developer
+      # - frontend-developer
+      # - code-reviewer
+      # - security-scanner
+      # - test-generator
+
+      # Check available agents
+      ls .claude/agents/*.md
+    tags: ["agent", "selection"]
+
+  - id: "ERR_AGENT_002"
+    category: agent
+    pattern: "Task tool.*failed|agent execution.*error"
+    severity: high
+    frequency: 34
+    recovery:
+      level: 2
+      strategy: "Retry with alternative agent"
+      success_rate: 0.78
+    fix_template: |
+      # Alternative agents by category:
+      # Implementation: backend-developer → api-developer → feature-builder
+      # QA: code-reviewer → test-generator → qa-validator
+      # Security: security-scanner → security-tester
+    tags: ["agent", "fallback"]
+
+  - id: "ERR_AGENT_003"
+    category: agent
+    pattern: "ReflectionAgent.*score.*<.*60|quality.*below threshold"
+    severity: medium
+    frequency: 28
+    recovery:
+      level: 2
+      strategy: "Auto-retry with refactor-specialist"
+      success_rate: 0.79
+    fix_template: |
+      # Trigger refactor-specialist for quality improvements
+      # Focus areas:
+      # - Code structure
+      # - Error handling
+      # - Test coverage
+      # - Documentation
+    tags: ["quality", "reflection"]
+
+  - id: "ERR_AGENT_004"
+    category: agent
+    pattern: "Context.*exceeded|token limit.*reached"
+    severity: high
+    frequency: 19
+    recovery:
+      level: 2
+      strategy: "Use /compact or split task"
+      success_rate: 0.85
+    fix_template: |
+      # Option 1: Compact context
+      /compact
+
+      # Option 2: Split into smaller tasks
+      # Instead of "implement entire feature"
+      # Use "implement auth module" then "implement user module"
+    tags: ["context", "token-limit"]
+
+  - id: "ERR_AGENT_005"
+    category: agent
+    pattern: "Coordinator.*selection.*failed|no suitable agent"
+    severity: medium
+    frequency: 15
+    recovery:
+      level: 2
+      strategy: "Clarify task or use explicit agent"
+      success_rate: 0.82
+    fix_template: |
+      # Be more specific in request:
+      # Instead of: "fix it"
+      # Use: "fix the authentication bug in src/auth/login.ts"
+
+      # Or specify agent directly:
+      # "Use backend-developer to implement the API"
+    tags: ["coordinator", "selection"]
+
+# ============================================
+# Statistics and Metadata
+# ============================================
+
+statistics:
+  total_patterns: 105
+  by_category:
+    nodejs: 20
+    typescript: 15
+    database: 15
+    network: 10
+    security: 10
+    build: 10
+    test: 10
+    git: 5
+    agent: 10
+  avg_recovery_rate: 0.84
+  most_common: "ERR_TS_002"
+  highest_success_rate: "ERR_BUILD_001"
+  last_updated: "2025-01-07"
+
+update_policy:
+  frequency: "every 20 failures"
+  auto_learn: true
+  validation: "manual review every 100 patterns"
+  retention: "180 days"

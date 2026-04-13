@@ -1,0 +1,94 @@
+agent_name: test-generator
+total_tasks: 0
+successful_tasks: 0
+failed_tasks: 0
+success_rate: 0
+avg_quality_score: 0
+avg_duration_ms: 0
+last_updated: 2025-11-04T00:00:00Z
+recent_tasks: []
+trends:
+  success_rate_trend: 0
+  quality_score_trend: 0
+  avg_duration_trend: 0
+specializations: {}
+omega_metrics:
+  performance_bounds:
+    min_quality_score: 52
+    min_success_rate: 0.8
+    max_latency_ms: 378000
+    worst_case:
+      quality_score: 52
+      success_rate: 0
+      latency_ms: 378000
+  dependencies:
+    omega: 18
+    little_omega: 16
+    coupling_ratio: 1.125
+    dependencies_list:
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Grep
+        - Glob
+        - Bash
+      agents:
+        - Arrange-Act-Assert
+        - auth-flow
+        - user-registration
+        - user-123
+        - user-456
+        - invalid-email
+        - aria-label
+        - faker-js
+        - wait-for
+        - testing-library
+      external: []
+    coupling_health:
+      status: good
+      recommendation: ""
+  completion_probability:
+    base_omega: 0
+    by_complexity:
+      low: 0.67
+      medium: 0.6130000000000001
+      high: 0.5
+    by_category:
+      implementation: 0
+      refactoring: 0
+      testing: 0.55
+      documentation: 0
+      debugging: 0
+    confidence_interval: 0.05
+    sample_size: 1
+    prediction_accuracy:
+      total_predictions: 1
+      accurate_predictions: 0
+      accuracy_rate: 0
+learning_metrics:
+  learning_rate: 0.1
+  quality_trend:
+    direction: stable
+    rate: 0
+  success_trend:
+    direction: stable
+    rate: 0
+  specialization:
+    primary_category: implementation
+    specialization_score: 0
+    categories:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+metadata:
+  last_updated: 2025-11-06T09:57:52.673Z
+  schema_version: 1.0.0
+  omega_integration_date: 2025-11-06
+  passes_quality_gates:
+    min_quality: false
+    min_success_rate: false
+    acceptable_coupling: true
+  overall_health: fair

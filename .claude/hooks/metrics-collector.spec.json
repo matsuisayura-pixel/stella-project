@@ -1,0 +1,279 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Hook Metrics Event Specification",
+  "description": "Hook system の全イベントを記録するためのスキーマ",
+  "type": "object",
+  "version": "1.0.0",
+
+  "definitions": {
+    "hookEvent": {
+      "type": "object",
+      "required": [
+        "timestamp",
+        "hookName",
+        "phase",
+        "toolName",
+        "eventType",
+        "processingTimeMs",
+        "sessionId"
+      ],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "イベント発生時刻（ISO 8601）"
+        },
+        "hookName": {
+          "type": "string",
+          "description": "Hook の名前",
+          "enum": [
+            "workflow-sessionstart-injector",
+            "skill-usage-guard",
+            "agent-enforcement-guard",
+            "unified-guard",
+            "deviation-approval-guard",
+            "definition-lint-gate",
+            "agent-trace-capture",
+            "session-handoff-generator"
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "description": "Hook実行フェーズ",
+          "enum": ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "SessionEnd", "PreTaskUse", "PostTaskUse"]
+        },
+        "toolName": {
+          "type": "string",
+          "description": "ツール名（PreToolUse/PostToolUseの場合）",
+          "examples": ["Write", "Edit", "Read", "Bash", "Glob", "Grep"]
+        },
+        "eventType": {
+          "type": "string",
+          "description": "イベント種別",
+          "enum": [
+            "allow",
+            "warning",
+            "block",
+            "info"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "description": "イベント理由（blockの場合は必須）",
+          "examples": [
+            "SKILL_BYPASS_DETECTED",
+            "DANGEROUS_COMMAND",
+            "DEVIATION_DETECTED",
+            "FILE_CREATE_UNAPPROVED"
+          ]
+        },
+        "processingTimeMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Hook処理時間（ミリ秒）"
+        },
+        "userOverride": {
+          "type": "boolean",
+          "description": "ユーザーが emergency override を使ったか"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^session-\\d{4}-\\d{2}-\\d{2}-[a-z0-9]{6}$",
+          "description": "セッションID（例: session-2026-02-13-abc123）"
+        },
+        "userId": {
+          "type": "string",
+          "description": "ユーザーID（オプション、デフォルト: 環境変量から抽出）"
+        },
+        "toolParams": {
+          "type": "object",
+          "description": "ツール実行パラメータのハッシュ値（センシティブ情報保護）",
+          "properties": {
+            "paramsHash": {
+              "type": "string",
+              "description": "SHA-256 ハッシュ（プライバシー保護）"
+            },
+            "paramsSize": {
+              "type": "number",
+              "description": "パラメータサイズ（バイト）"
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "追加メタデータ",
+          "properties": {
+            "fileCount": {
+              "type": "number",
+              "description": "編集ファイル数（Editの場合）"
+            },
+            "commandLength": {
+              "type": "number",
+              "description": "コマンド長（Bashの場合）"
+            },
+            "contextTokens": {
+              "type": "number",
+              "description": "コンテキストウィンドウ使用量"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+
+  "implementations": {
+    "recordMetric": {
+      "description": "metrics-collector.js で実装する関数",
+      "signature": "async function recordMetric(event: HookEvent): Promise<void>",
+      "behavior": [
+        "イベントをスキーマ検証",
+        "hook-event.log に追記（JSON Lines形式）",
+        "メモリバッファに蓄積",
+        "15分ごとにメトリクス集計",
+        "エラーハンドリング（記録失敗時は continue）"
+      ],
+      "error_handling": {
+        "validation_error": "スキーマ検証失敗 → ログに記録、処理は継続",
+        "write_error": "ファイル書き込み失敗 → リトライ（最大3回、指数バックオフ）",
+        "buffer_overflow": "メモリバッファ満杯 → 即座にフラッシュ"
+      },
+      "performance": {
+        "target_latency_ms": 10,
+        "memory_budget_mb": 50,
+        "max_log_size_mb": 100
+      }
+    },
+
+    "aggregateMetrics": {
+      "description": "metrics-aggregator.js で実装する関数",
+      "signature": "async function aggregateMetrics(date?: string): Promise<MetricsSummary>",
+      "behavior": [
+        "hook-event.log から当日データ読み込み",
+        "イベントを集計（blockRate, avgTime, p50, p95, p99）",
+        "Hook別に統計計算",
+        "metrics-daily.json に出力",
+        "異常検知（alerts.json 生成）"
+      ],
+      "output_metrics": {
+        "totalHookEvents": "全イベント数",
+        "blockCount": "ブロック件数",
+        "blockRate": "ブロック率（%）",
+        "falsePositiveEstimate": "推定False Positive率",
+        "averageHookTimeMs": "平均処理時間",
+        "p50TimeMs": "中央値処理時間",
+        "p95TimeMs": "95パーセンタイル",
+        "p99TimeMs": "99パーセンタイル"
+      }
+    },
+
+    "generateReport": {
+      "description": "generate-metrics-report.js で実装する関数",
+      "signature": "async function generateReport(days?: number): Promise<string>",
+      "behavior": [
+        "metrics-daily/*.json を読み込み（直近N日間）",
+        "集計統計を計算",
+        "metrics-dashboard.md を生成",
+        "アラートを抽出",
+        "改善提案を追加"
+      ],
+      "report_content": [
+        "概要（過去7日間）",
+        "Hook別詳細表",
+        "時系列グラフデータ",
+        "パフォーマンス分析",
+        "アラート一覧",
+        "改善提案"
+      ]
+    }
+  },
+
+  "storage": {
+    "hook-event.log": {
+      "format": "JSON Lines（1行=1イベント）",
+      "location": ".claude/hooks/data/hook-event.log",
+      "retention": "7日 + ローテーション",
+      "max_size_mb": 100,
+      "rotation_policy": "日次 + サイズベース"
+    },
+    "metrics-daily": {
+      "format": "JSON",
+      "location": ".claude/hooks/data/metrics-daily/metrics-YYYY-MM-DD.json",
+      "retention": "180日",
+      "example_filename": ".claude/hooks/data/metrics-daily/metrics-2026-02-13.json"
+    },
+    "alerts": {
+      "format": "JSON",
+      "location": ".claude/hooks/data/alerts-YYYY-MM-DD.json",
+      "retention": "90日"
+    }
+  },
+
+  "validation_rules": {
+    "timestamp": "UTC ISO 8601形式、システムクロック以下",
+    "processingTimeMs": "0-10000の範囲（>10000は警告ログ）",
+    "hookName": "定義済みhook名のみ許可",
+    "eventType": "block時は reason 必須",
+    "sessionId": "既知セッションID のみ許可"
+  },
+
+  "examples": {
+    "allow_event": {
+      "timestamp": "2026-02-13T10:30:45.123Z",
+      "hookName": "skill-usage-guard",
+      "phase": "UserPromptSubmit",
+      "toolName": null,
+      "eventType": "allow",
+      "processingTimeMs": 45,
+      "sessionId": "session-2026-02-13-abc123",
+      "userId": "matsumototoshihiko"
+    },
+    "block_event": {
+      "timestamp": "2026-02-13T10:31:00.000Z",
+      "hookName": "deviation-approval-guard",
+      "phase": "PreToolUse",
+      "toolName": "Write",
+      "eventType": "block",
+      "reason": "SKILL_BYPASS_DETECTED",
+      "processingTimeMs": 125,
+      "userOverride": false,
+      "sessionId": "session-2026-02-13-abc123",
+      "userId": "matsumototoshihiko",
+      "toolParams": {
+        "paramsHash": "a1b2c3d4e5f6...",
+        "paramsSize": 2048
+      }
+    },
+    "warning_event": {
+      "timestamp": "2026-02-13T10:32:15.500Z",
+      "hookName": "unified-guard",
+      "phase": "PreToolUse",
+      "toolName": "Bash",
+      "eventType": "warning",
+      "reason": "SLOW_EXECUTION",
+      "processingTimeMs": 850,
+      "sessionId": "session-2026-02-13-abc123"
+    }
+  },
+
+  "testing": {
+    "unit_tests": [
+      "Schema validation (valid/invalid events)",
+      "Metric aggregation (sum, avg, percentiles)",
+      "Report generation (markdown output)",
+      "Log rotation (file size > threshold)"
+    ],
+    "integration_tests": [
+      "End-to-end metric recording",
+      "Daily aggregation pipeline",
+      "Report generation with real data",
+      "Alert detection (blockRate > threshold)"
+    ],
+    "performance_tests": [
+      "Recording latency (target: <10ms)",
+      "Aggregation time (target: <1s)",
+      "Memory usage (target: <50MB)"
+    ]
+  }
+}

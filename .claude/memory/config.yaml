@@ -1,0 +1,55 @@
+# AIT42 Memory System Configuration
+# Version 1.0 - Long-term memory for agent learning
+
+version: "1.0"
+
+# Task retention settings
+max_tasks: 1000           # Maximum number of task records before auto-rotation
+retention_days: 90        # Delete tasks older than this (0 = keep forever)
+
+# Backup settings
+backup_enabled: true
+backup_path: ".claude/memory-backup/"
+backup_interval_days: 7   # Create backup every N days
+
+# Quality thresholds
+quality_threshold:
+  excellent: 90           # Score >= 90
+  good: 75                # Score >= 75
+  acceptable: 60          # Score >= 60
+  poor: 0                 # Score < 60
+
+# Success rate thresholds for agent selection
+success_rate_threshold:
+  preferred: 0.85         # Prefer agents with success_rate >= 0.85
+  acceptable: 0.70        # Accept agents with success_rate >= 0.70
+  warning: 0.50           # Warn if success_rate < 0.50
+
+# Recent tasks tracking
+recent_tasks_limit: 10    # Number of recent tasks to keep per agent
+
+# Task types
+task_types:
+  - implementation
+  - bug-fix
+  - refactoring
+  - testing
+  - documentation
+  - deployment
+  - optimization
+  - security
+  - integration
+  - migration
+  - analysis
+  - design
+
+# Rotation policy
+rotation:
+  enabled: true
+  archive_path: ".claude/memory-backup/archive/"
+  compress_archives: true
+
+# Statistics
+statistics:
+  calculate_trends: true
+  trend_window_days: 30   # Calculate trends over last 30 days

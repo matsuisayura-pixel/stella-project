@@ -1,0 +1,18 @@
+{
+  "category": "marketing",
+  "description": "マーケティング支援ツール群",
+  "source_servers": ["taiyou", "notion"],
+  "tools": [
+    {"name": "lp_generate", "description": "LP生成"},
+    {"name": "lp_analyze", "description": "LP分析"},
+    {"name": "email_create", "description": "メール作成"},
+    {"name": "email_sequence", "description": "ステップメール設定"},
+    {"name": "copy_write", "description": "コピーライティング"},
+    {"name": "headline_generate", "description": "ヘッドライン生成"},
+    {"name": "cta_optimize", "description": "CTA最適化"},
+    {"name": "funnel_design", "description": "ファネル設計"},
+    {"name": "ab_test", "description": "A/Bテスト設計"},
+    {"name": "conversion_analyze", "description": "コンバージョン分析"}
+  ],
+  "count": 10
+}

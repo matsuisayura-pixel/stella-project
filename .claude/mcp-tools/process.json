@@ -1,0 +1,27 @@
+{
+  "category": "process",
+  "description": "プロセス管理ツール群",
+  "source_servers": ["ide-integration", "docker"],
+  "tools": [
+    {"name": "process_execute", "description": "コマンド実行"},
+    {"name": "process_spawn", "description": "プロセス起動"},
+    {"name": "process_kill", "description": "プロセス終了"},
+    {"name": "process_list", "description": "プロセス一覧"},
+    {"name": "process_monitor", "description": "プロセス監視"},
+    {"name": "process_signal", "description": "シグナル送信"},
+    {"name": "process_env", "description": "環境変数取得"},
+    {"name": "process_cwd", "description": "作業ディレクトリ"},
+    {"name": "process_schedule", "description": "スケジュール実行"},
+    {"name": "process_cron", "description": "cron設定"},
+    {"name": "process_queue", "description": "キュー管理"},
+    {"name": "process_worker", "description": "ワーカー管理"},
+    {"name": "process_daemon", "description": "デーモン管理"},
+    {"name": "process_log", "description": "ログ取得"},
+    {"name": "process_stats", "description": "統計情報"},
+    {"name": "process_memory", "description": "メモリ使用量"},
+    {"name": "process_cpu", "description": "CPU使用率"},
+    {"name": "process_network", "description": "ネットワーク使用量"},
+    {"name": "process_health", "description": "ヘルスチェック"}
+  ],
+  "count": 19
+}

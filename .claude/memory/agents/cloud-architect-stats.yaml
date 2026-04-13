@@ -1,0 +1,168 @@
+agent_name: cloud-architect
+total_tasks: 0
+successful_tasks: 0
+failed_tasks: 0
+success_rate: 0
+avg_quality_score: 0
+avg_duration_ms: 0
+last_updated: 2025-11-04T00:00:00Z
+recent_tasks: []
+trends:
+  success_rate_trend: 0
+  quality_score_trend: 0
+  avg_duration_trend: 0
+specializations: {}
+omega_metrics:
+  performance_bounds:
+    min_quality_score: 44
+    min_success_rate: 0.8
+    max_latency_ms: 5000
+    worst_case:
+      quality_score: 44
+      success_rate: 0
+      latency_ms: 0
+  dependencies:
+    omega: 138
+    little_omega: 90
+    coupling_ratio: 1.5333333333333334
+    dependencies_list:
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Grep
+        - Glob
+        - Bash
+      agents:
+        - cloud-architect
+        - multi-cloud
+        - Multi-Region
+        - Lift-and-Shift
+        - Re-Platform
+        - Re-Architect
+        - Well-Architected
+        - 3-tier
+        - Multi-AZ
+        - Auto-Scaling
+        - cloud-architecture
+        - infrastructure-diagram
+        - data-flow-diagram
+        - network-topology
+        - 3-tier-web
+        - microservices-eks
+        - serverless-api
+        - vpc-stack
+        - ecs-stack
+        - rds-stack
+        - cost-optimization
+        - rightsizing-report
+        - reserved-instances
+        - gke-microservices
+        - cloud-run-api
+        - cloud-sql
+        - aks-microservices
+        - migration-plan
+        - rollback-plan
+        - architecture-decision-records
+        - ADR-001-database
+        - ADR-002-compute
+        - disaster-recovery
+        - scaling-procedures
+        - 3-Tier
+        - AZ-1
+        - AZ-2
+        - three-tier-stack
+        - aws-cdk-lib
+        - aws-ec2
+        - aws-ecs
+        - aws-ecs-patterns
+        - aws-rds
+        - aws-elasticache
+        - aws-s3
+        - aws-cloudfront
+        - aws-wafv2
+        - Private-Application
+        - Private-Database
+        - amazon-ecs-sample
+        - Auto-scaling
+        - AWS-AWSManagedRulesCommonRuleSet
+        - serverless-api-stack
+        - aws-lambda
+        - aws-apigateway
+        - aws-dynamodb
+        - aws-sqs
+        - aws-lambda-event
+        - api-handler
+        - X-Ray
+        - queue-processor
+        - stream-processor
+        - awscli-exe-linux
+        - describe-instances
+        - get-metric-statistics
+        - metric-name
+        - start-time
+        - end-time
+        - describe-volumes
+        - long-running
+        - fault-tolerant
+        - Intelligent-Tiering
+        - ML-based
+        - ADR-001
+        - e-commerce
+        - Multi-region
+        - point-in-time
+        - Cross-region
+        - pay-per-second
+        - ADR-002
+        - ADR-003
+        - Multi-cloud
+        - event-driven
+        - cross-region
+      external: []
+    coupling_health:
+      status: fair
+      recommendation: Moderate coupling. Monitor and consider refactoring if increasing.
+  completion_probability:
+    base_omega: 0
+    by_complexity:
+      low: 0.59
+      medium: 0.49
+      high: 0.5
+    by_category:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+    confidence_interval: 0.05
+    sample_size: 0
+    prediction_accuracy:
+      total_predictions: 0
+      accurate_predictions: 0
+      accuracy_rate: 0
+learning_metrics:
+  learning_rate: 0.1
+  quality_trend:
+    direction: stable
+    rate: 0
+  success_trend:
+    direction: stable
+    rate: 0
+  specialization:
+    primary_category: implementation
+    specialization_score: 0
+    categories:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+metadata:
+  last_updated: 2025-11-06T09:25:44.397Z
+  schema_version: 1.0.0
+  omega_integration_date: 2025-11-06
+  passes_quality_gates:
+    min_quality: false
+    min_success_rate: true
+    acceptable_coupling: true
+  overall_health: good

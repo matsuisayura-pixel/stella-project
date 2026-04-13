@@ -1,0 +1,98 @@
+agent_name: config-manager
+total_tasks: 0
+successful_tasks: 0
+failed_tasks: 0
+success_rate: 0
+avg_quality_score: 0
+avg_duration_ms: 0
+last_updated: 2025-11-04T00:00:00Z
+recent_tasks: []
+trends:
+  success_rate_trend: 0
+  quality_score_trend: 0
+  avg_duration_trend: 0
+specializations: {}
+omega_metrics:
+  performance_bounds:
+    min_quality_score: 65
+    min_success_rate: 0.8
+    max_latency_ms: 5000
+    worst_case:
+      quality_score: 65
+      success_rate: 0
+      latency_ms: 0
+  dependencies:
+    omega: 23
+    little_omega: 20
+    coupling_ratio: 1.15
+    dependencies_list:
+      tools:
+        - Read
+        - Write
+        - Edit
+      agents:
+        - config-manager
+        - dotenv-vault
+        - class-validator
+        - feature-flags
+        - change-me
+        - your-secret-here
+        - user-specific
+        - your-super-secret
+        - key-minimum-32
+        - your-oauth-client
+        - super-secret-key
+        - with-32-characters
+        - too-short
+        - aws-sdk
+        - client-secrets-manager
+        - us-east-1
+        - type-safe
+      external: []
+    coupling_health:
+      status: good
+      recommendation: ""
+  completion_probability:
+    base_omega: 0
+    by_complexity:
+      low: 0.8
+      medium: 0.7000000000000001
+      high: 0.5
+    by_category:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+    confidence_interval: 0.05
+    sample_size: 0
+    prediction_accuracy:
+      total_predictions: 0
+      accurate_predictions: 0
+      accuracy_rate: 0
+learning_metrics:
+  learning_rate: 0.1
+  quality_trend:
+    direction: stable
+    rate: 0
+  success_trend:
+    direction: stable
+    rate: 0
+  specialization:
+    primary_category: implementation
+    specialization_score: 0
+    categories:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+metadata:
+  last_updated: 2025-11-06T09:25:44.400Z
+  schema_version: 1.0.0
+  omega_integration_date: 2025-11-06
+  passes_quality_gates:
+    min_quality: false
+    min_success_rate: true
+    acceptable_coupling: true
+  overall_health: good

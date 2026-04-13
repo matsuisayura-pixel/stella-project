@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "id": "d8ce1c68-b644-4da1-bbd8-32b1ba262419",
+  "timestamp": "2026-04-13T13:55:28.881Z",
+  "files": [
+    {
+      "path": "..\\..\\..\\.claude\\skills\\stella-generate\\SKILL.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Edit: text replacement"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Edit"
+    }
+  }
+}

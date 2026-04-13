@@ -1,0 +1,24 @@
+{
+  "version": "2.19.0",
+  "stages": {
+    "canary": {
+      "percentage": 10,
+      "minSessions": 3
+    },
+    "partial": {
+      "percentage": 50,
+      "minSessions": 5
+    },
+    "full": {
+      "percentage": 100,
+      "minSessions": 10
+    }
+  },
+  "qualityGates": {
+    "minCompletionRate": 0.9,
+    "maxCriticalAlerts": 0,
+    "maxTokenIncrease": 0.2
+  },
+  "currentStage": "canary",
+  "stageHistory": []
+}

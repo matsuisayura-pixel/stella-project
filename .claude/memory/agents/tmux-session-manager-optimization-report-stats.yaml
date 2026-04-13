@@ -1,0 +1,109 @@
+agent_name: tmux-session-manager-optimization-report
+total_tasks: 0
+successful_tasks: 0
+failed_tasks: 0
+success_rate: 0
+avg_quality_score: 0
+avg_duration_ms: 0
+last_updated: 2025-11-04T00:00:00Z
+recent_tasks: []
+trends:
+  success_rate_trend: 0
+  quality_score_trend: 0
+  avg_duration_trend: 0
+specializations: {}
+omega_metrics:
+  performance_bounds:
+    min_quality_score: 56
+    min_success_rate: 0.8
+    max_latency_ms: 5000
+    worst_case:
+      quality_score: 56
+      success_rate: 0
+      latency_ms: 0
+  dependencies:
+    omega: 55
+    little_omega: 31
+    coupling_ratio: 1.7741935483870968
+    dependencies_list:
+      tools: []
+      agents:
+        - 2025-11-03
+        - tmux-session-manager
+        - Real-time
+        - multi-agent
+        - One-shot
+        - pipe-pane
+        - long-running
+        - real-time
+        - post-mortem
+        - Multi-agent
+        - Cross-platform
+        - auto-refresh
+        - Human-readable
+        - new-session
+        - send-keys
+        - C-m
+        - ait42-test-streaming
+        - CPU-intensive
+        - ait42-test
+        - Multi-Agent
+        - side-by-side
+        - split-window
+        - ait42-api-designer
+        - ait42-backend-dev
+        - ait42-metrics
+        - ait42-historical-metrics
+        - web-based
+        - Write-only
+        - production-ready
+        - production-grade
+        - 2-3
+      external: []
+    coupling_health:
+      status: fair
+      recommendation: Moderate coupling. Monitor and consider refactoring if increasing.
+  completion_probability:
+    base_omega: 0
+    by_complexity:
+      low: 0.7100000000000001
+      medium: 0.6100000000000001
+      high: 0.5
+    by_category:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+    confidence_interval: 0.05
+    sample_size: 0
+    prediction_accuracy:
+      total_predictions: 0
+      accurate_predictions: 0
+      accuracy_rate: 0
+learning_metrics:
+  learning_rate: 0.1
+  quality_trend:
+    direction: stable
+    rate: 0
+  success_trend:
+    direction: stable
+    rate: 0
+  specialization:
+    primary_category: implementation
+    specialization_score: 0
+    categories:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+metadata:
+  last_updated: 2025-11-06T09:25:44.436Z
+  schema_version: 1.0.0
+  omega_integration_date: 2025-11-06
+  passes_quality_gates:
+    min_quality: false
+    min_success_rate: true
+    acceptable_coupling: true
+  overall_health: good

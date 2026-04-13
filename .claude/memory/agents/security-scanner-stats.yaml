@@ -1,0 +1,168 @@
+agent_name: security-scanner
+total_tasks: 0
+successful_tasks: 0
+failed_tasks: 0
+success_rate: 0
+avg_quality_score: 0
+avg_duration_ms: 0
+last_updated: 2025-11-04T00:00:00Z
+recent_tasks: []
+trends:
+  success_rate_trend: 0
+  quality_score_trend: 0
+  avg_duration_trend: 0
+specializations: {}
+omega_metrics:
+  performance_bounds:
+    min_quality_score: 49
+    min_success_rate: 0.8
+    max_latency_ms: 5000
+    worst_case:
+      quality_score: 49
+      success_rate: 0
+      latency_ms: 0
+  dependencies:
+    omega: 154
+    little_omega: 90
+    coupling_ratio: 1.711111111111111
+    dependencies_list:
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Grep
+        - Glob
+        - Bash
+      agents:
+        - security-scanner
+        - PCI-DSS
+        - pre-commit
+        - security-scanning
+        - custom-rules
+        - owasp-top10
+        - sonar-project
+        - codeql-config
+        - zap-baseline
+        - zap-full-scan
+        - burp-scan
+        - snyk-test
+        - npm-audit
+        - audit-script
+        - trivy-scan
+        - trivy-config
+        - grype-scan
+        - trufflehog-scan
+        - git-secrets
+        - git-secrets-setup
+        - checkov-scan
+        - tfsec-scan
+        - cis-benchmarks
+        - docker-bench-security
+        - opa-policies
+        - github-actions
+        - security-scan
+        - vulnerability-dashboard
+        - hardcoded-secret
+        - pattern-either
+        - CWE-798
+        - Hard-coded
+        - sql-injection
+        - CWE-89
+        - insecure-random
+        - CWE-330
+        - unsafe-regex
+        - pattern-regex
+        - CWE-22
+        - jwt-no-verify
+        - CWE-347
+        - dangerous-eval
+        - CWE-95
+        - semgrep-scan
+        - runs-on
+        - ubuntu-latest
+        - semgrep-results
+        - codeql-action
+        - upload-sarif
+        - SNYK-JS-LODASH
+        - 2024-06-01T00
+        - SNYK-JS-MINIMIST
+        - language-settings
+        - severity-threshold
+        - fail-on
+        - json-file-output
+        - snyk-report
+        - project-name
+        - snyk-to-html
+        - trivy-report
+        - download-db-only
+        - ignore-unfixed
+        - trivy-results
+        - since-commit
+        - trufflehog-results
+        - trufflehog-filesystem
+        - output-file
+        - checkov-report
+        - soft-fail
+        - checkov-results
+        - semgrep-action
+        - security-audit
+        - owasp-top-ten
+        - dependency-scan
+        - setup-node
+        - node-version
+        - container-scan
+        - trivy-action
+        - image-ref
+        - secret-scan
+        - fetch-depth
+        - iac-scan
+        - checkov-action
+        - security-report
+      external: []
+    coupling_health:
+      status: fair
+      recommendation: Moderate coupling. Monitor and consider refactoring if increasing.
+  completion_probability:
+    base_omega: 0
+    by_complexity:
+      low: 0.64
+      medium: 0.54
+      high: 0.5
+    by_category:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+    confidence_interval: 0.05
+    sample_size: 0
+    prediction_accuracy:
+      total_predictions: 0
+      accurate_predictions: 0
+      accuracy_rate: 0
+learning_metrics:
+  learning_rate: 0.1
+  quality_trend:
+    direction: stable
+    rate: 0
+  success_trend:
+    direction: stable
+    rate: 0
+  specialization:
+    primary_category: implementation
+    specialization_score: 0
+    categories:
+      implementation: 0
+      refactoring: 0
+      testing: 0
+      documentation: 0
+      debugging: 0
+metadata:
+  last_updated: 2025-11-06T09:25:44.432Z
+  schema_version: 1.0.0
+  omega_integration_date: 2025-11-06
+  passes_quality_gates:
+    min_quality: false
+    min_success_rate: true
+    acceptable_coupling: true
+  overall_health: good

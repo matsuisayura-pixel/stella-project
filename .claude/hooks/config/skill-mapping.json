@@ -1,0 +1,140 @@
+{
+  "$schema": "skill-mapping-schema.json",
+  "version": "1.0.0",
+  "description": "スキル自動マッピング設定 - タスク種別から必須スキルを自動強制",
+  "mappings": [
+    {
+      "triggers": ["YOUTUBE", "教材", "動画"],
+      "skill": "video-course",
+      "strict": false,
+      "description": "YouTube教材動画作成"
+    },
+    {
+      "triggers": ["セールスレター"],
+      "skill": "taiyo-style-sales-letter",
+      "strict": false,
+      "description": "太陽スタイルセールスレター"
+    },
+    {
+      "triggers": ["ステップメール"],
+      "skill": "taiyo-style-step-mail",
+      "strict": false,
+      "description": "太陽スタイルステップメール"
+    },
+    {
+      "triggers": ["VSL台本", "VSL"],
+      "skill": "taiyo-style-vsl",
+      "strict": false,
+      "description": "太陽スタイルVSL台本"
+    },
+    {
+      "triggers": ["Instagram", "Shorts"],
+      "skill": "shorts-create",
+      "strict": true,
+      "description": "Instagram Shorts作成"
+    },
+    {
+      "triggers": ["インタラクティブ動画", "分岐動画", "VSL動画"],
+      "skill": "interactive-video-platform",
+      "strict": true,
+      "description": "インタラクティブ動画プラットフォーム"
+    },
+    {
+      "triggers": ["TTS", "音声生成", "ナレーション"],
+      "skill": "interactive-video-platform",
+      "strict": true,
+      "description": "TTS音声生成（Fish Audio）"
+    },
+    {
+      "triggers": ["画像品質チェック", "ビジュアルQA"],
+      "skill": "agentic-vision",
+      "strict": false,
+      "description": "Gemini 3 Flash画像分析"
+    },
+    {
+      "triggers": ["電話", "架電", "通話", "Voice AI"],
+      "skill": "voice-ai",
+      "strict": false,
+      "description": "Twilio + OpenAI Realtime API"
+    },
+    {
+      "triggers": ["SDR", "営業パイプライン", "リード管理"],
+      "skill": "ai-sdr",
+      "strict": false,
+      "description": "AI SDR営業自動化"
+    },
+    {
+      "triggers": ["リードスコアリング", "リード評価"],
+      "skill": "lead-scoring",
+      "strict": false,
+      "description": "リードスコアリングシステム"
+    },
+    {
+      "triggers": ["アウトリーチ", "メッセージ送信"],
+      "skill": "outreach-composer",
+      "strict": false,
+      "description": "アウトリーチメッセージ作成"
+    },
+    {
+      "triggers": ["URL分析", "サイト解析", "ページ構造", "リンク抽出"],
+      "skill": "url-deep-analysis",
+      "strict": false,
+      "description": "URL完全解析"
+    },
+    {
+      "triggers": ["ヘッドライン", "キャッチコピー"],
+      "skill": "taiyo-style-headline",
+      "strict": false,
+      "description": "太陽スタイルヘッドライン"
+    },
+    {
+      "triggers": ["追伸", "P.S."],
+      "skill": "taiyo-style-ps",
+      "strict": false,
+      "description": "太陽スタイル追伸"
+    },
+    {
+      "triggers": ["ブレット", "箇条書き", "ベネフィット"],
+      "skill": "taiyo-style-bullet",
+      "strict": false,
+      "description": "太陽スタイルブレット"
+    },
+    {
+      "triggers": ["LP", "ランディングページ"],
+      "skill": "taiyo-style-lp",
+      "strict": false,
+      "description": "太陽スタイルLP"
+    },
+    {
+      "triggers": ["ディープリサーチ", "深層リサーチ", "徹底リサーチ", "本格リサーチ", "深層調査", "deep research", "最強リサーチ", "徹底調査", "完全リサーチ"],
+      "skills": ["world-research", "mega-research-plus", "unified-research", "research-free", "research"],
+      "strict": false,
+      "description": "全リサーチスキル統合ディープリサーチ（5スキル同時発動）",
+      "mode": "all"
+    },
+    {
+      "triggers": ["世界リサーチ", "SNSリサーチ", "グローバル検索", "論文検索", "学術リサーチ"],
+      "skill": "world-research",
+      "strict": false,
+      "description": "全世界SNS・学術論文横断検索"
+    },
+    {
+      "triggers": ["統合リサーチ", "マルチソース"],
+      "skill": "unified-research",
+      "strict": false,
+      "description": "複数リサーチAPI統合"
+    },
+    {
+      "triggers": ["リサーチ", "調査", "深掘り"],
+      "skill": "research",
+      "strict": false,
+      "description": "基本リサーチ（簡易調査）"
+    }
+  ],
+  "notes": [
+    "strict: true の場合、スキルを使わないとexit code 2でブロック",
+    "strict: false の場合、警告のみ（実行は継続）",
+    "複数トリガーが一致する場合、最初にマッチしたものを採用",
+    "トリガーは部分一致で検出"
+  ]
+}

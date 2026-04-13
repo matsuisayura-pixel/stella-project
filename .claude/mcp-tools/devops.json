@@ -1,0 +1,33 @@
+{
+  "category": "devops",
+  "description": "DevOpsツール群",
+  "source_servers": ["docker", "vercel", "firebase"],
+  "tools": [
+    {"name": "devops_build", "description": "ビルド実行"},
+    {"name": "devops_test", "description": "テスト実行"},
+    {"name": "devops_deploy", "description": "デプロイ"},
+    {"name": "devops_rollback", "description": "ロールバック"},
+    {"name": "devops_pipeline_run", "description": "パイプライン実行"},
+    {"name": "devops_pipeline_status", "description": "パイプライン状態"},
+    {"name": "devops_pipeline_cancel", "description": "パイプラインキャンセル"},
+    {"name": "devops_artifact_upload", "description": "アーティファクト保存"},
+    {"name": "devops_artifact_download", "description": "アーティファクト取得"},
+    {"name": "devops_cache_clear", "description": "キャッシュクリア"},
+    {"name": "devops_env_create", "description": "環境作成"},
+    {"name": "devops_env_destroy", "description": "環境削除"},
+    {"name": "devops_env_promote", "description": "環境プロモート"},
+    {"name": "devops_container_build", "description": "コンテナビルド"},
+    {"name": "devops_container_push", "description": "コンテナプッシュ"},
+    {"name": "devops_container_run", "description": "コンテナ実行"},
+    {"name": "devops_container_stop", "description": "コンテナ停止"},
+    {"name": "devops_container_logs", "description": "コンテナログ"},
+    {"name": "devops_container_exec", "description": "コンテナ内実行"},
+    {"name": "devops_secret_set", "description": "シークレット設定"},
+    {"name": "devops_secret_get", "description": "シークレット取得"},
+    {"name": "devops_config_set", "description": "設定値設定"},
+    {"name": "devops_config_get", "description": "設定値取得"},
+    {"name": "devops_infra_plan", "description": "インフラ計画"},
+    {"name": "devops_infra_apply", "description": "インフラ適用"}
+  ],
+  "count": 25
+}

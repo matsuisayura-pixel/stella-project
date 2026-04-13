@@ -1,0 +1,287 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Emergency Override Log Schema",
+  "description": "ユーザーが emergency override を使用した場合の記録スキーマ",
+  "type": "object",
+  "version": "1.0.0",
+
+  "definition": {
+    "overrideEvent": {
+      "type": "object",
+      "required": [
+        "timestamp",
+        "overrideType",
+        "overrideTarget",
+        "reason",
+        "sessionId",
+        "userId"
+      ],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Override実行時刻（ISO 8601）"
+        },
+        "overrideType": {
+          "type": "string",
+          "description": "Override種別",
+          "enum": [
+            "TAISUN_OVERRIDE_ALL",
+            "TAISUN_OVERRIDE_SPECIFIC"
+          ]
+        },
+        "overrideTarget": {
+          "type": "string",
+          "description": "Override対象（SPECIFIC の場合）",
+          "examples": [
+            "deviation-approval-guard:newfile:embeddings.ts",
+            "skill-usage-guard:*",
+            "unified-guard:DANGEROUS_COMMAND"
+          ]
+        },
+        "overrideDuration": {
+          "type": "string",
+          "description": "Override有効期間",
+          "enum": [
+            "1m",
+            "5m",
+            "1h",
+            "until-next-session",
+            "until-session-end"
+          ],
+          "default": "until-session-end"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Override実行理由",
+          "minLength": 10,
+          "maxLength": 500,
+          "examples": [
+            "Hook failure prevented normal execution",
+            "User approved creation of new file",
+            "Emergency hotfix required",
+            "Testing hook behavior"
+          ]
+        },
+        "approverDecision": {
+          "type": "string",
+          "description": "ユーザー（approver）の判断",
+          "enum": [
+            "approved_temporary",
+            "approved_permanent",
+            "escalate_to_review"
+          ]
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^session-\\d{4}-\\d{2}-\\d{2}-[a-z0-9]{6}$",
+          "description": "セッションID"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Override実行ユーザーID"
+        },
+        "affectedHooks": {
+          "type": "array",
+          "description": "影響を受けるhook",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            ["deviation-approval-guard", "skill-usage-guard"]
+          ]
+        },
+        "status": {
+          "type": "string",
+          "description": "Override実行結果",
+          "enum": [
+            "active",
+            "expired",
+            "revoked",
+            "completed"
+          ]
+        },
+        "metadata": {
+          "type": "object",
+          "description": "追加情報",
+          "properties": {
+            "toolNameAttempted": {
+              "type": "string",
+              "description": "ブロックされていたツール名"
+            },
+            "operationAttempted": {
+              "type": "string",
+              "description": "実行しようとしていた操作"
+            },
+            "isEmergency": {
+              "type": "boolean",
+              "description": "緊急対応フラグ"
+            },
+            "needsPostReview": {
+              "type": "boolean",
+              "description": "事後レビューが必要か"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+
+  "usage_guide": {
+    "when_to_use": [
+      "Hookが誤った判定をしてユーザーの作業がブロックされた場合",
+      "テスト目的でhookの動作を確認する場合",
+      "本当の緊急事態（セッション継続不可状態）の場合"
+    ],
+    "when_NOT_to_use": [
+      "hookの判定が正しい場合（ユーザーが指示に従うべき）",
+      "単なる時間短縮目的",
+      "hook設計が不適切だと思う場合（相談するべき）"
+    ]
+  },
+
+  "override_types": {
+    "TAISUN_OVERRIDE_ALL": {
+      "description": "全hookを一時的に無効化",
+      "usage": "export TAISUN_OVERRIDE_ALL=1",
+      "duration": "usually 'until-session-end'",
+      "risk": "HIGH - セキュリティが完全に無効化",
+      "use_case": "本当の緊急時のみ"
+    },
+    "TAISUN_OVERRIDE_SPECIFIC": {
+      "description": "特定のhook/条件を無効化",
+      "usage": "export TAISUN_OVERRIDE=\"hook:condition:target\"",
+      "example": "export TAISUN_OVERRIDE=\"deviation-approval-guard:newfile:embeddings.ts\"",
+      "risk": "MEDIUM - 特定のhookのみ無効化",
+      "use_case": "False Positive 対応"
+    }
+  },
+
+  "event_lifecycle": {
+    "1_request": {
+      "description": "ユーザーが override を要求",
+      "status": "pending",
+      "action": "AskUserQuestion で理由を確認"
+    },
+    "2_approval": {
+      "description": "ユーザーが override を承認",
+      "status": "active",
+      "action": "override.log に記録、環境変数を設定"
+    },
+    "3_execution": {
+      "description": "Override期間中、hookは無効化状態で実行",
+      "status": "active",
+      "action": "記録を継続（どのツール呼び出しが override の対象か）"
+    },
+    "4_expiration": {
+      "description": "Override期間が終了",
+      "status": "expired",
+      "action": "自動的にhook機能を復元"
+    },
+    "5_review": {
+      "description": "事後レビュー（needsPostReview=true の場合）",
+      "status": "escalate_to_review",
+      "action": "Architecture Team が override の妥当性を検討"
+    }
+  },
+
+  "fields_guide": {
+    "timestamp": "いつoverride が実行されたか（監査用）",
+    "overrideType": "全体か部分的か",
+    "overrideTarget": "どのhook/条件が対象か（SPECIFIC の場合）",
+    "overrideDuration": "どのくらい無効化するか（'1h'='1時間', 'until-session-end'='セッション終了まで'）",
+    "reason": "なぜ override が必要だったか（最重要）",
+    "approverDecision": "ユーザーがどのレベルで承認したか",
+    "affectedHooks": "どのhookが影響を受けるか",
+    "status": "override の現在の状態",
+    "needsPostReview": "事後レビューが必要か（trueなら Architecture Team に通知）"
+  },
+
+  "storage": {
+    "location": ".claude/hooks/data/override.log",
+    "format": "JSON Lines（1行=1イベント）",
+    "rotation": "日次（override-YYYY-MM-DD.log）",
+    "retention": "90日（監査用に保持）",
+    "access": "read-only to users（ユーザーは参照可、編集は Systemのみ）"
+  },
+
+  "alerts": {
+    "high_frequency": {
+      "condition": "同一ユーザーが24時間に 5回以上 override",
+      "action": "警告メール + Manual Review 要求",
+      "reason": "hookシステムに問題がある可能性"
+    },
+    "emergency_flag": {
+      "condition": "isEmergency=true",
+      "action": "即座に Architecture Team に通知",
+      "reason": "本当の緊急事態"
+    },
+    "requires_review": {
+      "condition": "needsPostReview=true",
+      "action": "レビュー待ちリストに追加",
+      "timeline": "24-48時間以内にレビュー"
+    }
+  },
+
+  "examples": {
+    "false_positive_scenario": {
+      "timestamp": "2026-02-13T10:31:00.000Z",
+      "overrideType": "TAISUN_OVERRIDE_SPECIFIC",
+      "overrideTarget": "deviation-approval-guard:newfile:embeddings.ts",
+      "overrideDuration": "until-session-end",
+      "reason": "embeddings.ts is required for Skill Fidelity System implementation. Hook falsely detected as 'newfile deviation' but it is part of planned Stage 1 setup.",
+      "approverDecision": "approved_temporary",
+      "sessionId": "session-2026-02-13-abc123",
+      "userId": "matsumototoshihiko",
+      "affectedHooks": ["deviation-approval-guard"],
+      "status": "active",
+      "metadata": {
+        "toolNameAttempted": "Write",
+        "operationAttempted": "Create file embeddings.ts",
+        "isEmergency": false,
+        "needsPostReview": true
+      }
+    },
+
+    "emergency_scenario": {
+      "timestamp": "2026-02-13T15:45:00.000Z",
+      "overrideType": "TAISUN_OVERRIDE_ALL",
+      "overrideDuration": "until-session-end",
+      "reason": "Critical hook deadlock: all hooks returning timeout. Session was completely unusable. Emergency override to unblock session and save current work.",
+      "approverDecision": "approved_temporary",
+      "sessionId": "session-2026-02-13-xyz789",
+      "userId": "matsumototoshihiko",
+      "affectedHooks": ["deviation-approval-guard", "skill-usage-guard", "unified-guard", "definition-lint-gate"],
+      "status": "active",
+      "metadata": {
+        "isEmergency": true,
+        "needsPostReview": true
+      }
+    }
+  },
+
+  "policy": {
+    "approval_threshold": {
+      "TAISUN_OVERRIDE_ALL": "Always require explicit user approval + reason",
+      "TAISUN_OVERRIDE_SPECIFIC": "Automatic approval if reason is valid, but log for review"
+    },
+    "duration_limits": {
+      "TAISUN_OVERRIDE_ALL": "Maximum 'until-session-end'（1セッション内のみ）",
+      "TAISUN_OVERRIDE_SPECIFIC": "Can be longer（最大24時間）"
+    },
+    "post_review": {
+      "trigger": "needsPostReview=true",
+      "reviewer": "Architecture Team",
+      "deadline": "24-48時間以内",
+      "decision": "妥当性判定 + 根本原因分析"
+    }
+  },
+
+  "implementation_notes": {
+    "session_isolation": "Override は同一セッション内でのみ有効（新セッションでは自動的にリセット）",
+    "cascading_effect": "TAISUN_OVERRIDE_ALL は全hookに影響（使用は慎重に）",
+    "audit_trail": "全 override はログに記録（削除不可）",
+    "automatic_expiry": "指定期間後は自動的に無効化（手動操作不要）"
+  }
+}
