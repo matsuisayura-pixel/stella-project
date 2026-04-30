@@ -5,7 +5,7 @@
     "strict": true,
     "currentPhase": 1,
     "startedAt": "2026-04-09T09:55:53.226Z",
-    "lastUpdated": "2026-04-13T14:21:10.171Z",
+    "lastUpdated": "2026-04-14T04:11:07.398Z",
     "autoMappedSkills": [
       {
         "name": "基本リサーチ（簡易調査）",
@@ -86,7 +86,7 @@
         "autoMapped": false
       },
       "research": {
-        "requestedAt": "2026-04-09T10:15:00.138Z",
+        "requestedAt": "2026-04-14T04:11:07.398Z",
         "used": false,
         "autoMapped": true
       },
@@ -107,6 +107,21 @@
       },
       "stella-project": {
         "requestedAt": "2026-04-13T14:21:10.171Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "claude": {
+        "requestedAt": "2026-04-14T03:33:49.732Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "settings": {
+        "requestedAt": "2026-04-14T03:33:49.732Z",
+        "used": false,
+        "autoMapped": false
+      },
+      "connectors": {
+        "requestedAt": "2026-04-14T03:33:49.732Z",
         "used": false,
         "autoMapped": false
       }

@@ -1,0 +1,38 @@
+{
+  "version": "0.1.0",
+  "id": "4e586e6b-999e-46b0-919f-7f3258a03803",
+  "timestamp": "2026-04-24T09:10:18.570Z",
+  "files": [
+    {
+      "path": "stella\\content\\output\\20260412-090000__okane-to-yutakasa\\voice.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  },
+  "vcs": {
+    "type": "git",
+    "commit": "03195a1272c13acdcf10da8bb54633c1c7cb964b",
+    "branch": "main"
+  }
+}

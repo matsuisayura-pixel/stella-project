@@ -1,0 +1,38 @@
+{
+  "version": "0.1.0",
+  "id": "92739d88-7dfe-4a04-93e6-9599f84c24f5",
+  "timestamp": "2026-04-24T09:26:05.815Z",
+  "files": [
+    {
+      "path": "stella\\content\\output\\20260422-090000__kodomo-ga-oya-wo-erabu\\voice.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  },
+  "vcs": {
+    "type": "git",
+    "commit": "03195a1272c13acdcf10da8bb54633c1c7cb964b",
+    "branch": "main"
+  }
+}

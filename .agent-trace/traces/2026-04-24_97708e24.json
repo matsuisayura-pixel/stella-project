@@ -1,0 +1,38 @@
+{
+  "version": "0.1.0",
+  "id": "97708e24-f850-47af-99b7-a47d7e32de91",
+  "timestamp": "2026-04-24T09:09:01.838Z",
+  "files": [
+    {
+      "path": "stella\\content\\output\\20260411-090000__tsukareru-riyuu-kaihoo\\note.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  },
+  "vcs": {
+    "type": "git",
+    "commit": "03195a1272c13acdcf10da8bb54633c1c7cb964b",
+    "branch": "main"
+  }
+}

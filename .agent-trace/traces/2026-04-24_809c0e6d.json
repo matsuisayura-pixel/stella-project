@@ -1,0 +1,38 @@
+{
+  "version": "0.1.0",
+  "id": "809c0e6d-524b-41fa-ab01-3b78ad8b064c",
+  "timestamp": "2026-04-24T09:26:19.906Z",
+  "files": [
+    {
+      "path": "stella\\content\\output\\20260422-090000__kodomo-ga-oya-wo-erabu\\spotify-meta.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  },
+  "vcs": {
+    "type": "git",
+    "commit": "03195a1272c13acdcf10da8bb54633c1c7cb964b",
+    "branch": "main"
+  }
+}

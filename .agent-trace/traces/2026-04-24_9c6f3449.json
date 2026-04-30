@@ -1,0 +1,38 @@
+{
+  "version": "0.1.0",
+  "id": "9c6f3449-d6e5-4131-9998-d306c1f1f556",
+  "timestamp": "2026-04-24T09:09:28.424Z",
+  "files": [
+    {
+      "path": "stella\\content\\output\\20260411-090000__tsukareru-riyuu-kaihoo\\spotify-meta.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  },
+  "vcs": {
+    "type": "git",
+    "commit": "03195a1272c13acdcf10da8bb54633c1c7cb964b",
+    "branch": "main"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "version": "0.1.0",
+  "id": "900bb4c3-690a-45d0-88e4-796d47fe0172",
+  "timestamp": "2026-04-24T09:21:21.014Z",
+  "files": [
+    {
+      "path": "stella\\content\\output\\20260418-090000__ningen-kankei-reset\\sources.md",
+      "conversations": [
+        {
+          "contributor_type": "ai",
+          "model": "anthropic/claude-opus-4-5-20251101",
+          "ranges": [
+            {
+              "start_line": 1,
+              "end_line": -1
+            }
+          ],
+          "description": "Write: file creation/overwrite"
+        }
+      ]
+    }
+  ],
+  "tool": {
+    "name": "taisun-agent",
+    "version": "2.10.1"
+  },
+  "metadata": {
+    "dev.taisun": {
+      "hook": "agent-trace-capture",
+      "tool_used": "Write"
+    }
+  },
+  "vcs": {
+    "type": "git",
+    "commit": "03195a1272c13acdcf10da8bb54633c1c7cb964b",
+    "branch": "main"
+  }
+}
