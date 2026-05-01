@@ -1,0 +1,91 @@
+name: Stella Daily Content Generation
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日 9:00 JST (= 0:00 UTC)
+  workflow_dispatch:      # 手動実行ボタン
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Generate Stella content
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude --dangerously-skip-permissions -p "
+          あなたはステラというスピリチュアルキャラクターのコンテンツを自動生成するエージェントです。
+          以下の手順を順番に実行してください。
+
+          ## キャラクター設定
+          - 名前: ステラ / 一人称: 私 / 読者: あなた
+          - 語尾: ですね / なのです
+          - 固有名詞(講師名・コース名)は一切使わない
+          - 比喩変換: 潜在意識→心の深海、波動→内側の周波数、カルマ→魂の記憶、ハイヤーセルフ→本来の自分
+
+          ## 実行手順
+
+          ### Step 1: 知識ベース読み込み
+          必ずReadする:
+          - stella/knowledge-base/synthesis/wisdom-core.md
+          - stella/knowledge-base/synthesis/columns-essence.md
+
+          ### Step 2: 既存テーマ確認
+          Glob で stella/content/output/ 配下のフォルダ名を全取得し、使われているテーマを把握する。
+
+          ### Step 3: テーマ選定
+          以下から未使用のものを1つ選ぶ:
+          魂の使命の見つけ方、直感を信じていい3つのサイン、手放すことで豊かさが来る、孤独を感じる時の魂の意味、境界線を引くことが愛である理由、お金に好かれる人の共通点、怒りの感情と魂の成長、夢が叶わない時に知っておくべきこと、自分を責めることをやめる方法、人間関係のストレスが教えてくれること、眠れない夜に魂が動いている、変化を恐れる心の仕組み、比べることをやめた時に起きること、先祖からの守護を受け取る方法、嫉妬心の正しい使い方、疲れた時こそ魂が成長している、本当の自分を生きるとはどういうことか、今の時代に生まれてきた理由
+
+          ### Step 4: Webリサーチ
+          選んだテーマで WebSearch 3件、上位2URLをWebFetchで取得する。
+
+          ### Step 5: 出力ディレクトリ
+          stella/content/output/YYYYMMDD-090000__[slug]/ を作成する(日付は実行日)。
+
+          ### Step 6: note.md 生成(1500-2000字)
+          1.つかみ(150字): 読者の悩みへの共感
+          2.問題の本質(300字): 多次元統合ロジック
+          3.教えのエッセンス(600字): wisdom-core+リサーチ統合
+          4.季節の診断(300字): 行動or受容の季節
+          5.具体的なアクション(300字): 今日からできること
+          6.まとめ(150字): 希望で締める
+          7.CTA-A: stella/core/cta-templates.md より挿入
+
+          ### Step 7: voice.md 生成(900-1500字)
+          オープニング→本題→実践ワーク→クロージング(CTA-C)
+          [感情:]タグと(間)を挿入。収録メモを末尾に付ける。
+
+          ### Step 8: note-meta.md 生成
+          タイトル案3つ(25字以内) + ハッシュタグ10個 + 投稿設定
+
+          ### Step 9: spotify-meta.md 生成
+          エピソードタイトル(30字以内) + 説明文(150字) + カテゴリ
+
+          ### Step 10: sources.md 生成
+          使用した知識ベース箇所とリサーチURLを記録する。
+
+          全Step完了後にサマリーを表示してください。
+          " < /dev/null
+
+      - name: Commit and push
+        run: |
+          git config user.name "Stella Bot"
+          git config user.email "stella-bot@auto.com"
+          git add stella/content/output/
+          git diff --staged --quiet || git commit -m "feat: auto-generate stella content ($(date +%Y-%m-%d))"
+          git push
