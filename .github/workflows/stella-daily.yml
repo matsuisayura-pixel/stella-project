@@ -5,6 +5,15 @@ on:
     - cron: '0 0 * * *'  # 毎日 9:00 JST (= 0:00 UTC)
   workflow_dispatch:      # 手動実行ボタン
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -182,3 +191,28 @@ jobs:
           git add stella/content/output/
           git diff --staged --quiet || git commit -m "feat: auto-generate 5 stella articles ($(date +%Y-%m-%d))"
           git push
+
+      - name: Install Python dependencies
+        run: pip install markdown
+
+      - name: Build static site
+        run: python3 scripts/build_site.py
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: generate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
