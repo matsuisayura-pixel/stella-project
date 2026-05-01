@@ -79,7 +79,7 @@ def md_to_html(content: str) -> str:
     return f'<pre style="white-space:pre-wrap">{escaped}</pre>'
 
 def page(title: str, body: str, is_article: bool = False) -> str:
-    back = '<a class="back-link" href="/">← 記事一覧</a>' if is_article else ''
+    back = '<a class="back-link" href="../">← 記事一覧</a>' if is_article else ''
     full_title = f'{title} | Stella' if is_article else 'Stella'
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -133,7 +133,7 @@ def build() -> None:
     items = '\n'.join(
         f'<li>'
         f'<div class="date">{a["date"]}</div>'
-        f'<a href="/articles/{a["slug"]}.html">{a["title"]}</a>'
+        f'<a href="articles/{a["slug"]}.html">{a["title"]}</a>'
         f'</li>'
         for a in articles
     )
