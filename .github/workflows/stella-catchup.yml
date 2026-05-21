@@ -1,0 +1,81 @@
+name: Stella Catchup - Batch Article Generation
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: '生成する記事数（1〜30）'
+        required: true
+        default: '10'
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  catchup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install anthropic markdown
+
+      - name: Generate articles (batch)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          COUNT=${{ github.event.inputs.count }}
+          echo "合計 ${COUNT} 記事を生成します"
+          for i in $(seq 1 $COUNT); do
+            echo "=============================="
+            echo "記事 ${i}/${COUNT} を生成中..."
+            echo "=============================="
+            python3 scripts/generate_stella.py --article $i
+            echo "記事 ${i}/${COUNT} 完了"
+          done
+
+      - name: Commit and push
+        run: |
+          git config user.name "Stella Bot"
+          git config user.email "stella-bot@auto.com"
+          git add stella/content/output/
+          git diff --staged --quiet || git commit -m "feat: catchup batch - $(git diff --staged --name-only | grep -c /) articles ($(date +%Y-%m-%d))"
+          git push
+
+      - name: Build static site
+        run: python3 scripts/build_site.py
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: catchup
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
