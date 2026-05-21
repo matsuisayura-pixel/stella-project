@@ -24,13 +24,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '20'
+          python-version: '3.11'
 
-      - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code
+      - name: Install Python dependencies
+        run: pip install anthropic markdown
 
       - name: Generate 5 Stella articles
         env:
@@ -40,148 +40,8 @@ jobs:
             echo "=============================="
             echo "記事 ${i}/5 を生成中..."
             echo "=============================="
-            claude --dangerously-skip-permissions -p "
-          あなたはステラ（Stella）というスピリチュアルキャラクターのコンテンツを生成するエージェントです。
-          以下のパイプラインを順番に全て実行してください。省略・簡略化は禁止です。
-
-          ## キャラクター設定（厳守）
-          - 名前: ステラ / 一人称: 私 / 読者: あなた
-          - 語尾: 〜ですね / 〜なのです（必ず統一）
-          - 講師名・コース名・固有メソッド名は一切使わない
-          - 比喩変換辞書: 潜在意識→心の深海、波動→内側の周波数、カルマ→魂の記憶、ハイヤーセルフ→本来の自分
-          - 引用する場合は「かつての賢者はこう説いていました」等の形で匿名化する
-          - 疑問形33%以上: 読者に問いかけながら進める
-          - 恐怖→希望の流れで構成する
-
-          ---
-
-          ## STEP 1: 知識ベース読み込み（必須）
-          以下を必ずReadして内容を把握する:
-          - stella/knowledge-base/synthesis/wisdom-core.md
-          - stella/knowledge-base/synthesis/columns-essence.md
-
-          ---
-
-          ## STEP 2: 既存テーマ確認
-          Glob で stella/content/output/ 配下の全フォルダ名を取得し、
-          すでに使われているテーマを把握する。
-
-          ---
-
-          ## STEP 3: テーマ＆キーワード選定（note-research + keyword-mega-extractor 相当）
-          以下を実行してテーマを決定する:
-
-          3-1. WebSearch で「スピリチュアル note 人気記事 2026」「魂 自己啓発 note ランキング」等を検索し、
-               現在noteで読まれているテーマのトレンドを把握する。
-
-          3-2. WebSearch で「[候補テーマ] スピリチュアル」を検索し、
-               競合が少なくニッチなキーワードを特定する。
-
-          3-3. STEP 2 で確認済みの既存テーマと重複しない、新しいテーマを1つ選定する。
-
-          3-4. 選定したテーマについて、以下を整理する:
-               - core_keywords（5個）
-               - niche キーワード（競合が少ない）
-               - 読者の悩み・ペイン（具体的に）
-
-          ---
-
-          ## STEP 4: note売れ筋調査（note-research 相当）
-          選定したテーマで WebSearch を3件実行し、上位2件のURLを WebFetch で取得する。
-          以下を分析する:
-          - 人気記事のタイトルパターン
-          - コンテンツ構成の傾向
-          - 読者が反応するフック・冒頭表現
-
-          ---
-
-          ## STEP 5: タイトル生成（taiyo-style-headline 相当）
-          分析結果をもとに、タイトル候補を12パターン生成する。
-          各タイトルは25字以内、読者の悩みに直撃する表現にする。
-          最も効果的な1本を選んで次のSTEPで使用する。
-
-          ---
-
-          ## STEP 6: 出力ディレクトリ作成
-          stella/content/output/YYYYMMDD-HHMMSS__[slug]/ を作成する。
-          - 日付は実行日（JST）
-          - slug はテーマをローマ字でハイフン区切り（例: tamashii-no-shinka）
-
-          ---
-
-          ## STEP 7: note.md 生成（1500〜2000字）
-          STEP 1の知識ベース + STEP 4のリサーチを統合し、以下の構成で書く:
-
-          1. つかみ（150字）: 読者の悩みへの深い共感。疑問形で始める。
-          2. 問題の本質（300字）: 多次元統合ロジック（季節の概念）で解説。
-          3. 教えのエッセンス（600字）: wisdom-core + リサーチをステラ口調に統合。
-          4. 季節の診断（300字）: 読者が「行動の季節」か「受容の季節」かを診断し、それぞれへのメッセージを書く。
-          5. 具体的なアクション（300字）: 今日からできる実践を3つ。
-          6. まとめ（150字）: 希望・光で締める。
-          7. CTA: stella/core/cta-templates.md を Readして CTA-A を挿入する。
-
-          ---
-
-          ## STEP 8: 品質チェック（taiyo-analyzer 相当・70点以上必須）
-          生成した note.md を以下の6次元でスコアリングする:
-
-          □ 語尾・リズムの一貫性（ですね/なのです）
-          □ 固有名詞・メソッド名の除去
-          □ ステラらしい比喩の使用
-          □ 疑問形33%以上
-          □ CTA挿入済み
-          □ 文字数 1500〜2000字
-
-          各項目を10点満点で採点し、合計60点満点で評価する（70%以上 = 42点以上が合格）。
-          42点未満の場合は該当箇所を修正して再評価し、合格するまで繰り返す。
-
-          ---
-
-          ## STEP 9: voice.md 生成（900〜1500字）（story-pattern-inner-conflict 相当）
-          以下の構成で音声スクリプトを書く:
-
-          オープニング（つかみ・共感）
-          ↓
-          内的葛藤の描写（読者が心の中で感じている矛盾・苦しさ）
-          ↓
-          気づきの瞬間（転換点）
-          ↓
-          本来の自分への解放
-          ↓
-          実践ワーク（聴きながらできる簡単なもの）
-          ↓
-          クロージング + CTA-C（stella/core/cta-templates.mdより）
-
-          [感情:穏やか] 等の感情タグと（間）を適切に挿入する。
-          末尾に収録メモ（推奨BPM・トーン・注意点）を付ける。
-
-          ---
-
-          ## STEP 10: note-meta.md 生成
-          - タイトル案3つ（各25字以内）
-          - ハッシュタグ10個（#スピリチュアル 等）
-          - 投稿推奨時間・カテゴリ設定
-
-          ---
-
-          ## STEP 11: spotify-meta.md 生成
-          - エピソードタイトル（30字以内）
-          - 説明文（150字）
-          - カテゴリ・タグ
-
-          ---
-
-          ## STEP 12: sources.md 生成
-          - 使用した知識ベースの該当箇所（ファイル名・内容の要約）
-          - WebSearchで参照したURL一覧
-          - 選定キーワード一覧
-
-          ---
-
-          全STEPが完了したら「記事タイトル・文字数・品質スコア」をサマリーとして表示してください。
-          " < /dev/null
+            python3 scripts/generate_stella.py --article $i
             echo "記事 ${i}/5 完了"
-            sleep 5
           done
 
       - name: Commit and push
@@ -191,9 +51,6 @@ jobs:
           git add stella/content/output/
           git diff --staged --quiet || git commit -m "feat: auto-generate 5 stella articles ($(date +%Y-%m-%d))"
           git push
-
-      - name: Install Python dependencies
-        run: pip install markdown
 
       - name: Build static site
         run: python3 scripts/build_site.py
