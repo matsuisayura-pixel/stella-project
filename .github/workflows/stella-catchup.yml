@@ -36,6 +36,24 @@ jobs:
       - name: Install Python dependencies
         run: pip install requests markdown
 
+      - name: Test Gemini API connection
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          python3 -c "
+import requests, os
+key = os.environ.get('GOOGLE_API_KEY', '')
+print(f'APIキー長: {len(key)}文字')
+print(f'APIキー先頭: {key[:8]}...' if len(key) >= 8 else f'APIキー未設定')
+resp = requests.get('https://generativelanguage.googleapis.com/v1beta/models', params={'key': key}, timeout=10)
+print(f'HTTP ステータス: {resp.status_code}')
+if resp.ok:
+    print('API接続: 成功')
+else:
+    print(f'API接続: 失敗 - {resp.text}')
+    exit(1)
+"
+
       - name: Generate articles (batch)
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}

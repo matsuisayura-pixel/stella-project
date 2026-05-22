@@ -8,7 +8,6 @@ GitHub Actions から `python3 scripts/generate_stella.py --article N` で呼び
 import argparse
 import os
 import re
-import time
 import requests
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -50,9 +49,26 @@ def call_gemini(api_key: str, prompt: str) -> str:
         json=body,
         timeout=120,
     )
-    resp.raise_for_status()
+
+    if not resp.ok:
+        print(f'[ERROR] Gemini API エラー: HTTP {resp.status_code}')
+        print(f'[ERROR] レスポンス内容: {resp.text[:1000]}')
+        resp.raise_for_status()
+
     data = resp.json()
-    return data['candidates'][0]['content']['parts'][0]['text']
+
+    if 'candidates' not in data or not data['candidates']:
+        print(f'[ERROR] candidatesが空です。レスポンス全体: {data}')
+        raise ValueError('Gemini API からコンテンツが返されませんでした（安全フィルター等）')
+
+    candidate = data['candidates'][0]
+
+    if 'content' not in candidate:
+        print(f'[ERROR] contentがありません。finishReason: {candidate.get("finishReason")}')
+        print(f'[ERROR] candidate全体: {candidate}')
+        raise ValueError(f'コンテンツがブロックされました: {candidate.get("finishReason")}')
+
+    return candidate['content']['parts'][0]['text']
 
 
 def generate(api_key: str, article_num: int) -> dict:
@@ -172,6 +188,8 @@ def main():
     if not api_key:
         raise SystemExit('ERROR: GOOGLE_API_KEY が設定されていません。\n'
                          'GitHub の 設定 > シークレットと変数 > Actions で設定してください。')
+
+    print(f'  API キー確認: {api_key[:8]}...')
 
     print(f'\n{"="*50}')
     print(f'  記事 {args.article} 生成開始')
