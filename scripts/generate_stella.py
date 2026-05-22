@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 generate_stella.py
-Anthropic Python SDK で直接 Stella 記事を1本生成する。
+Google Gemini API で Stella 記事を1本生成する（無料枠対応）。
 GitHub Actions から `python3 scripts/generate_stella.py --article N` で呼び出す。
 """
 
@@ -11,7 +11,7 @@ import re
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-import anthropic
+import google.generativeai as genai
 
 JST = timezone(timedelta(hours=9))
 
@@ -35,7 +35,7 @@ def extract_section(text: str, marker: str) -> str:
     return m.group(1).strip() if m else ''
 
 
-def generate(client: anthropic.Anthropic, article_num: int) -> dict:
+def generate(article_num: int) -> dict:
     wisdom  = read_file('stella/knowledge-base/synthesis/wisdom-core.md')[:3000]
     columns = read_file('stella/knowledge-base/synthesis/columns-essence.md')[:2000]
     cta     = read_file('stella/core/cta-templates.md')
@@ -108,15 +108,13 @@ title: [最終タイトル（25字以内）]
 <<</sources>>>
 """
 
-    print(f'  Claude API にリクエスト送信中...')
-    response = client.messages.create(
-        model='claude-opus-4-5-20251101',
-        max_tokens=8000,
-        messages=[{'role': 'user', 'content': prompt}],
-    )
-    text = response.content[0].text
+    print('  Gemini API にリクエスト送信中...')
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    response = model.generate_content(prompt)
+    text = response.text
 
     theme_block = extract_section(text, 'theme')
+
     def pick(pattern: str) -> str:
         m = re.search(pattern, theme_block)
         return m.group(1).strip() if m else ''
@@ -152,22 +150,23 @@ def main():
     parser.add_argument('--article', type=int, default=1)
     args = parser.parse_args()
 
-    api_key = os.environ.get('ANTHROPIC_API_KEY')
+    api_key = os.environ.get('GOOGLE_API_KEY')
     if not api_key:
-        raise SystemExit('ERROR: ANTHROPIC_API_KEY が設定されていません。'
-                         'GitHub の Settings > Secrets > Actions で設定してください。')
+        raise SystemExit('ERROR: GOOGLE_API_KEY が設定されていません。\n'
+                         'GitHub の 設定 > シークレットと変数 > Actions で設定してください。')
+
+    genai.configure(api_key=api_key)
 
     print(f'\n{"="*50}')
-    print(f'  記事 {args.article}/5 生成開始')
+    print(f'  記事 {args.article} 生成開始')
     print(f'{"="*50}')
 
-    client = anthropic.Anthropic(api_key=api_key)
-    data   = generate(client, args.article)
+    data = generate(args.article)
     dir_name = save(data)
 
-    print(f'  ✓ テーマ : {data["theme"]}')
+    print(f'  ✓ テーマ  : {data["theme"]}')
     print(f'  ✓ タイトル: {data["title"]}')
-    print(f'  ✓ 出力先 : stella/content/output/{dir_name}/')
+    print(f'  ✓ 出力先  : stella/content/output/{dir_name}/')
     print(f'{"="*50}\n')
 
 
