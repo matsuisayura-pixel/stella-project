@@ -34,7 +34,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install google-generativeai markdown
+        run: pip install requests markdown
 
       - name: Generate articles (batch)
         env:
@@ -48,6 +48,7 @@ jobs:
             echo "=============================="
             python3 scripts/generate_stella.py --article $i
             echo "記事 ${i}/${COUNT} 完了"
+            sleep 5
           done
 
       - name: Commit and push
@@ -55,7 +56,7 @@ jobs:
           git config user.name "Stella Bot"
           git config user.email "stella-bot@auto.com"
           git add stella/content/output/
-          git diff --staged --quiet || git commit -m "feat: catchup batch - $(git diff --staged --name-only | grep -c /) articles ($(date +%Y-%m-%d))"
+          git diff --staged --quiet || git commit -m "feat: catchup batch articles ($(date +%Y-%m-%d))"
           git push
 
       - name: Build static site

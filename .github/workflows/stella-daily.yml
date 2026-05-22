@@ -30,7 +30,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install google-generativeai markdown
+        run: pip install requests markdown
 
       - name: Generate 5 Stella articles
         env:
@@ -42,6 +42,7 @@ jobs:
             echo "=============================="
             python3 scripts/generate_stella.py --article $i
             echo "記事 ${i}/5 完了"
+            sleep 5
           done
 
       - name: Commit and push

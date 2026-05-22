@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 """
 generate_stella.py
-Google Gemini API で Stella 記事を1本生成する（無料枠対応）。
+Google Gemini REST API で Stella 記事を1本生成する（無料枠対応）。
 GitHub Actions から `python3 scripts/generate_stella.py --article N` で呼び出す。
 """
 
 import argparse
 import os
 import re
+import time
+import requests
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-import google.generativeai as genai
-
 JST = timezone(timedelta(hours=9))
+GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
 
 
 def read_file(path: str) -> str:
@@ -35,7 +36,26 @@ def extract_section(text: str, marker: str) -> str:
     return m.group(1).strip() if m else ''
 
 
-def generate(article_num: int) -> dict:
+def call_gemini(api_key: str, prompt: str) -> str:
+    body = {
+        'contents': [{'parts': [{'text': prompt}]}],
+        'generationConfig': {
+            'maxOutputTokens': 8000,
+            'temperature': 0.9,
+        },
+    }
+    resp = requests.post(
+        GEMINI_URL,
+        params={'key': api_key},
+        json=body,
+        timeout=120,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    return data['candidates'][0]['content']['parts'][0]['text']
+
+
+def generate(api_key: str, article_num: int) -> dict:
     wisdom  = read_file('stella/knowledge-base/synthesis/wisdom-core.md')[:3000]
     columns = read_file('stella/knowledge-base/synthesis/columns-essence.md')[:2000]
     cta     = read_file('stella/core/cta-templates.md')
@@ -109,9 +129,7 @@ title: [最終タイトル（25字以内）]
 """
 
     print('  Gemini API にリクエスト送信中...')
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(prompt)
-    text = response.text
+    text = call_gemini(api_key, prompt)
 
     theme_block = extract_section(text, 'theme')
 
@@ -155,13 +173,11 @@ def main():
         raise SystemExit('ERROR: GOOGLE_API_KEY が設定されていません。\n'
                          'GitHub の 設定 > シークレットと変数 > Actions で設定してください。')
 
-    genai.configure(api_key=api_key)
-
     print(f'\n{"="*50}')
     print(f'  記事 {args.article} 生成開始')
     print(f'{"="*50}')
 
-    data = generate(args.article)
+    data = generate(api_key, args.article)
     dir_name = save(data)
 
     print(f'  ✓ テーマ  : {data["theme"]}')
