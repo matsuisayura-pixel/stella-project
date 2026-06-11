@@ -6,11 +6,10 @@ on:
   workflow_dispatch:
     inputs:
       test_mode:
-        description: 'TEST_MODE: APIを呼ばずサンプル記事で動作確認'
+        description: 'TEST MODE（チェックするとAPIなしでサンプル記事を生成）'
         required: false
-        default: 'false'
-        type: choice
-        options: ['false', 'true']
+        default: false
+        type: boolean
 
 permissions:
   contents: write
