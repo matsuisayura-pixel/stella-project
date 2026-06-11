@@ -481,29 +481,173 @@ def save(data: dict) -> str:
     return dir_name
 
 
+# ==================== TEST MODE ====================
+
+def generate_test_data(article_num: int) -> dict:
+    """
+    TEST_MODE=true のとき API を一切呼ばずに固定サンプルデータを返す。
+    note 投稿・アイキャッチ生成の動作確認用。
+    """
+    theme = f'テスト記事{article_num}：魂の目覚めと季節の変わり目'
+    slug  = f'test-tamashii-mezame-{article_num:02d}'
+
+    note = f"""# {theme}
+
+あなたは今、何かが変わり始めていると感じていませんか？
+
+## 問題の本質
+
+多くの人が「なぜうまくいかないのか」と悩んでいますね。それは行動の量の問題ではなく、内側の周波数が現実とずれているからなのです。
+
+### 行動の季節と受容の季節
+
+人の魂には、大きく分けて二つの季節があります。**行動の季節**と**受容の季節**です。
+
+## 教えのエッセンス
+
+かつての賢者はこう説いていました——「流れに逆らう魚は、流れを知らない魚よりも疲れる」と。
+
+心の深海の奥底では、あなたはすでに答えを知っているのです。
+
+- 今の自分を受け入れること
+- 焦りを手放すこと
+- 本来の自分の声に耳を傾けること
+
+## 季節の診断
+
+あなたは今、どちらの季節にいるのでしょうか？
+
+> 何かを一生懸命やっているのに結果が出ない、という感覚があるなら、それは「受容の季節」のサインかもしれませんね。
+
+## 具体的なアクション
+
+今日からできる実践を三つお伝えします。
+
+1. 朝、目覚めたとき「今日も魂の記憶に従って生きる」と静かに宣言する
+2. 「できない」という言葉を「まだ」に変える
+3. 夜、一つだけ「今日の小さな光」を思い出してから眠る
+
+## まとめ
+
+あなたの人生に、光が差し込んでいますね。それはあなた自身が発している光なのです。
+
+━━━━━━━━━━━━━━━━━━━━
+✨ 今のあなたに、届けたいものがあります
+
+「魂の現在地診断」——5つの問いに答えるだけで、
+今のあなたがどの「季節」にいるのかを
+静かにお届けします。
+
+完全無料です。
+
+▼ 受け取る
+[LINE登録リンク]
+━━━━━━━━━━━━━━━━━━━━
+"""
+
+    voice = f"""[感情:穏やか]
+
+こんにちは、ステラです。（間）
+
+今日は「{theme}」についてお話しします。
+
+[感情:共感]
+
+あなたは今、変化の入り口に立っているのかもしれませんね。（間）
+
+それは、とても大切なサインなのです。
+
+[感情:穏やか]
+
+今日の実践です。心を静かにして、ゆっくり深呼吸してください。
+
+━ 収録メモ ━
+推奨トーン：穏やか・ゆっくり
+推奨BPM：90
+注意点：読点で0.5秒、（間）で1.5秒のポーズ
+"""
+
+    note_meta = f"""# タイトル案
+1. 魂が目覚める瞬間——変化の季節に気づくとき
+2. うまくいかないのは「季節」のせいかもしれませんね
+3. 心の深海からのメッセージ：今あなたに必要なこと
+
+# ハッシュタグ
+#スピリチュアル #魂 #引き寄せ #自己成長 #開運 #波動 #潜在意識 #人生 #癒し #ステラ
+
+# 投稿設定
+- 推奨投稿時間: 朝7時〜9時
+- カテゴリ: スピリチュアル・自己啓発
+"""
+
+    spotify_meta = f"""# エピソードタイトル（30字以内）
+魂の目覚め——季節の変わり目に
+
+# 説明文（150字）
+変化を感じているあなたへ。魂には「行動の季節」と「受容の季節」があります。今あなたがどちらの季節にいるのか、ステラと一緒に確かめてみませんか。
+
+# カテゴリ・タグ
+カテゴリ: スピリチュアル
+タグ: 魂, 引き寄せ, 自己成長
+"""
+
+    sources = f"""# 使用素材（TEST MODE）
+
+このファイルはテストモードで生成された固定サンプルです。
+実際の素材ファイルは使用していません。
+
+# 固有名詞変換記録
+なし（テストデータのため）
+
+# 品質スコア
+100点（テストデータのため満点固定）
+"""
+
+    return {
+        'theme':         theme,
+        'slug':          slug,
+        'title':         theme,
+        'note':          note.strip(),
+        'voice':         voice.strip(),
+        'note_meta':     note_meta.strip(),
+        'spotify_meta':  spotify_meta.strip(),
+        'sources':       sources.strip(),
+        'quality_score': 100,
+    }
+
+
+# ==================== メイン ====================
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--article', type=int, default=1)
     args = parser.parse_args()
 
-    api_key = os.environ.get('ANTHROPIC_API_KEY')
-    if not api_key:
-        raise SystemExit(
-            'ERROR: ANTHROPIC_API_KEY が未設定\n'
-            'GitHub の Settings → Secrets and variables → Actions で設定してください。'
-        )
+    test_mode = os.environ.get('TEST_MODE', '').lower() == 'true'
 
     print(f'\n{"="*50}')
-    print(f'  ステラ記事生成 v2 - 記事{args.article}')
+    if test_mode:
+        print(f'  ステラ記事生成 v2 - 記事{args.article} [TEST MODE]')
+    else:
+        print(f'  ステラ記事生成 v2 - 記事{args.article}')
     print(f'{"="*50}')
 
-    print('\n  [1] 素材ファイル読み込み中...')
-    sources = load_all_sources()
-    print(f'  → {len(sources)}ファイル読み込み完了')
+    if test_mode:
+        print('  [TEST MODE] API を呼ばずに固定サンプルデータを生成します')
+        data = generate_test_data(args.article)
+    else:
+        api_key = os.environ.get('ANTHROPIC_API_KEY')
+        if not api_key:
+            raise SystemExit(
+                'ERROR: ANTHROPIC_API_KEY が未設定\n'
+                'GitHub の Settings → Secrets and variables → Actions で設定してください。'
+            )
+        print('\n  [1] 素材ファイル読み込み中...')
+        sources = load_all_sources()
+        print(f'  → {len(sources)}ファイル読み込み完了')
+        cta = Path('stella/core/cta-templates.md').read_text(encoding='utf-8')
+        data = generate(api_key, args.article, sources, cta)
 
-    cta = Path('stella/core/cta-templates.md').read_text(encoding='utf-8')
-
-    data = generate(api_key, args.article, sources, cta)
     dir_name = save(data)
 
     print(f'\n  ✓ テーマ    : {data["theme"]}')

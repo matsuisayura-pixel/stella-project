@@ -3,7 +3,14 @@ name: Stella Daily Content Generation
 on:
   schedule:
     - cron: '0 0 * * *'  # 毎日 9:00 JST (= 0:00 UTC)
-  workflow_dispatch:      # 手動実行ボタン
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'TEST_MODE: APIを呼ばずサンプル記事で動作確認'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
 
 permissions:
   contents: write
@@ -38,10 +45,11 @@ jobs:
       - name: Generate 5 Stella articles
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TEST_MODE: ${{ github.event.inputs.test_mode || 'false' }}
         run: |
           for i in 1 2 3 4 5; do
             echo "=============================="
-            echo "記事 ${i}/5 を生成中..."
+            echo "記事 ${i}/5 を生成中... (TEST_MODE=${TEST_MODE})"
             echo "=============================="
             python3 scripts/generate_stella.py --article $i
             echo "記事 ${i}/5 完了"
