@@ -30,7 +30,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install requests markdown
+        run: pip install requests markdown pillow playwright
+
+      - name: Install Playwright browsers
+        run: playwright install chromium --with-deps
 
       - name: Generate 5 Stella articles
         env:
@@ -44,6 +47,33 @@ jobs:
             echo "記事 ${i}/5 完了"
             sleep 5
           done
+
+      - name: Generate eyecatch images
+        run: |
+          for dir in stella/content/output/*/; do
+            if [ -f "${dir}content.json" ] && [ ! -f "${dir}images/eyecatch.png" ]; then
+              echo "アイキャッチ生成: ${dir}"
+              python3 scripts/generate_eyecatch.py "${dir}"
+            fi
+          done
+
+      - name: Post drafts to note
+        env:
+          NOTE_EMAIL:    ${{ secrets.NOTE_EMAIL }}
+          NOTE_PASSWORD: ${{ secrets.NOTE_PASSWORD }}
+        run: |
+          posted=0
+          for dir in stella/content/output/*/; do
+            if [ -f "${dir}content.json" ] && [ ! -f "${dir}draft-url.txt" ]; then
+              echo "=============================="
+              echo "note 投稿: ${dir}"
+              echo "=============================="
+              python3 scripts/post_to_note.py "${dir}" || echo "[警告] 投稿失敗: ${dir}"
+              posted=$((posted + 1))
+              sleep 10
+            fi
+          done
+          echo "投稿完了: ${posted} 記事"
 
       - name: Commit and push
         run: |
