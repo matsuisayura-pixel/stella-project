@@ -14,7 +14,8 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 JST = timezone(timedelta(hours=9))
-GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent'
+CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages'
+CLAUDE_MODEL   = 'claude-haiku-4-5-20251001'
 
 # 固有名詞チェック用（記事に残してはいけない名前）
 FORBIDDEN_WORDS = [
@@ -148,38 +149,33 @@ def get_available_themes(sources: dict) -> str:
     return '\n'.join(lines)
 
 
-# ==================== Gemini API ====================
+# ==================== Claude API ====================
 
 def call_gemini(api_key: str, prompt: str) -> str:
-    body = {
-        'contents': [{'parts': [{'text': prompt}]}],
-        'generationConfig': {
-            'maxOutputTokens': 8000,
-            'temperature': 0.9,
-        },
+    """Anthropic Claude API を呼び出す（関数名は互換性のため維持）"""
+    headers = {
+        'x-api-key': api_key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
     }
-    resp = requests.post(
-        GEMINI_URL,
-        params={'key': api_key},
-        json=body,
-        timeout=120,
-    )
+    body = {
+        'model': CLAUDE_MODEL,
+        'max_tokens': 8000,
+        'temperature': 0.9,
+        'messages': [{'role': 'user', 'content': prompt}],
+    }
+    resp = requests.post(CLAUDE_API_URL, headers=headers, json=body, timeout=120)
     if not resp.ok:
-        print(f'[ERROR] Gemini API: HTTP {resp.status_code}')
+        print(f'[ERROR] Claude API: HTTP {resp.status_code}')
         print(f'[ERROR] {resp.text[:500]}')
         resp.raise_for_status()
 
     data = resp.json()
-    if 'candidates' not in data or not data['candidates']:
-        raise ValueError(f'Gemini: candidatesが空 -> {data}')
+    content = data.get('content', [])
+    if not content:
+        raise ValueError(f'Claude: contentが空 -> {data}')
 
-    candidate = data['candidates'][0]
-    if 'content' not in candidate:
-        raise ValueError(
-            f'Gemini: contentなし, finishReason={candidate.get("finishReason")}'
-        )
-
-    return candidate['content']['parts'][0]['text']
+    return content[0]['text']
 
 
 # ==================== ブロックパーサー ====================
@@ -490,10 +486,10 @@ def main():
     parser.add_argument('--article', type=int, default=1)
     args = parser.parse_args()
 
-    api_key = os.environ.get('GOOGLE_API_KEY')
+    api_key = os.environ.get('ANTHROPIC_API_KEY')
     if not api_key:
         raise SystemExit(
-            'ERROR: GOOGLE_API_KEY が未設定\n'
+            'ERROR: ANTHROPIC_API_KEY が未設定\n'
             'GitHub の Settings → Secrets and variables → Actions で設定してください。'
         )
 
