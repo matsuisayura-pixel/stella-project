@@ -57,23 +57,40 @@ jobs:
             fi
           done
 
+      - name: Check note secrets
+        env:
+          NOTE_EMAIL:    ${{ secrets.NOTE_EMAIL }}
+          NOTE_PASSWORD: ${{ secrets.NOTE_PASSWORD }}
+        run: |
+          if [ -z "${NOTE_EMAIL}" ] || [ -z "${NOTE_PASSWORD}" ]; then
+            echo "::error::NOTE_EMAIL / NOTE_PASSWORD が GitHub Secrets に未登録です。"
+            echo "Settings → Secrets and variables → Actions で設定してください。"
+            exit 1
+          fi
+          echo "Secrets OK: NOTE_EMAIL=${NOTE_EMAIL:0:4}****"
+
       - name: Post drafts to note
         env:
           NOTE_EMAIL:    ${{ secrets.NOTE_EMAIL }}
           NOTE_PASSWORD: ${{ secrets.NOTE_PASSWORD }}
         run: |
           posted=0
+          failed=0
           for dir in stella/content/output/*/; do
             if [ -f "${dir}content.json" ] && [ ! -f "${dir}draft-url.txt" ]; then
               echo "=============================="
               echo "note 投稿: ${dir}"
               echo "=============================="
-              python3 scripts/post_to_note.py "${dir}" || echo "[警告] 投稿失敗: ${dir}"
-              posted=$((posted + 1))
+              if python3 scripts/post_to_note.py "${dir}"; then
+                posted=$((posted + 1))
+              else
+                echo "::warning::投稿失敗: ${dir}"
+                failed=$((failed + 1))
+              fi
               sleep 10
             fi
           done
-          echo "投稿完了: ${posted} 記事"
+          echo "投稿完了: ${posted} 記事 / 失敗: ${failed} 記事"
 
       - name: Commit and push
         run: |
