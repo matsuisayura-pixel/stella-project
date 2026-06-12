@@ -12,6 +12,9 @@ Thumbs.db
 stella/logs/
 *.log
 
+# note.com セッション（認証情報 — コミット禁止）
+note_session.json
+
 # 一時ファイル
 .claude/temp/
 .claude/hooks/data/

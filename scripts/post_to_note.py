@@ -5,7 +5,8 @@ Playwright で note.com に記事を下書き保存する。
 Usage:
   python3 scripts/post_to_note.py <output_dir>
 環境変数:
-  NOTE_EMAIL    / NOTE_PASSWORD  : ログイン情報
+  NOTE_SESSION_JSON : Playwright storage_state JSON（推奨）
+  NOTE_EMAIL / NOTE_PASSWORD : フォームログイン（reCAPTCHA により失敗する可能性あり）
 """
 
 import json
@@ -138,6 +139,31 @@ def _fill_first(page, selectors: list, value: str, label: str) -> str:
 
 
 # ==================== 各ステップ関数 ====================
+
+def do_verify_session(page, output_dir: Path) -> None:
+    """Cookie 復元後にログイン済みかどうかを確認する"""
+    step(1, "Cookie によるセッション復元 — ログインページへのアクセスを回避")
+    page.goto(f"{NOTE_URL}/", wait_until="domcontentloaded")
+    page.wait_for_load_state("networkidle", timeout=15000)
+    current = page.url
+    step(2, f"トップページ到達: {current}")
+
+    # ログインボタンが残っていたらセッション切れ
+    try:
+        login_link = page.locator('a[href*="/login"]').first
+        if login_link.is_visible(timeout=3000):
+            save_debug_artifacts(page, output_dir, "session-expired")
+            raise RuntimeError(
+                "NOTE_SESSION_JSON のセッションが切れています。"
+                " scripts/save_note_session.py を再実行して Secret を更新してください。"
+            )
+    except Exception as e:
+        if "session-expired" in str(e) or "NOTE_SESSION_JSON" in str(e):
+            raise
+    step(3, "セッション有効確認 OK")
+    # STEP 4, 5 はフォームログインのため skip — STEP 6 (新規記事ページ) へ続く
+    info("STEP 02-05 はCookieログインのためスキップ")
+
 
 def do_login(page, output_dir: Path, email: str, password: str) -> None:
     # STEP 1
@@ -359,10 +385,16 @@ def do_quality_check(page, url: str, content: dict) -> dict:
 # ==================== メイン ====================
 
 def post_to_note(output_dir: Path) -> str:
-    email    = os.environ.get("NOTE_EMAIL", "")
-    password = os.environ.get("NOTE_PASSWORD", "")
-    if not email or not password:
-        raise SystemExit("ERROR: NOTE_EMAIL / NOTE_PASSWORD が未設定")
+    session_json = os.environ.get("NOTE_SESSION_JSON", "")
+    email        = os.environ.get("NOTE_EMAIL", "")
+    password     = os.environ.get("NOTE_PASSWORD", "")
+
+    if not session_json and (not email or not password):
+        raise SystemExit(
+            "ERROR: NOTE_SESSION_JSON または NOTE_EMAIL+NOTE_PASSWORD が未設定\n"
+            "  推奨: scripts/save_note_session.py をローカルで実行し、"
+            "出力の JSON を GitHub Secret NOTE_SESSION_JSON に登録してください。"
+        )
 
     content_path = output_dir / "content.json"
     if not content_path.exists():
@@ -377,21 +409,37 @@ def post_to_note(output_dir: Path) -> str:
     info(f"タイトル: {title[:50]}")
     info(f"本文HTML長: {len(body_html)} chars")
     info(f"アイキャッチ: {eyecatch}  存在={eyecatch.exists()}")
+    info(f"ログイン方式: {'Cookie(SESSION_JSON)' if session_json else 'フォームログイン'}")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
             args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
         )
-        context = browser.new_context(
-            viewport={"width": 1280, "height": 900},
-            locale="ja-JP",
-            permissions=["clipboard-read", "clipboard-write"],
-        )
+
+        # Cookie方式: storage_state を直接渡してフォームログインをスキップ
+        if session_json:
+            storage_state = json.loads(session_json)
+            context = browser.new_context(
+                viewport={"width": 1280, "height": 900},
+                locale="ja-JP",
+                permissions=["clipboard-read", "clipboard-write"],
+                storage_state=storage_state,
+            )
+        else:
+            context = browser.new_context(
+                viewport={"width": 1280, "height": 900},
+                locale="ja-JP",
+                permissions=["clipboard-read", "clipboard-write"],
+            )
+
         page = context.new_page()
 
         try:
-            do_login(page, output_dir, email, password)
+            if session_json:
+                do_verify_session(page, output_dir)
+            else:
+                do_login(page, output_dir, email, password)
             do_navigate_new(page, output_dir)
             do_input_title(page, output_dir, title)
             do_input_body(page, output_dir, body_html)

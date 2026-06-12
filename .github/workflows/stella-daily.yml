@@ -66,20 +66,31 @@ jobs:
 
       - name: Check note secrets
         env:
-          NOTE_EMAIL:    ${{ secrets.NOTE_EMAIL }}
-          NOTE_PASSWORD: ${{ secrets.NOTE_PASSWORD }}
+          NOTE_SESSION_JSON: ${{ secrets.NOTE_SESSION_JSON }}
+          NOTE_EMAIL:        ${{ secrets.NOTE_EMAIL }}
+          NOTE_PASSWORD:     ${{ secrets.NOTE_PASSWORD }}
         run: |
-          if [ -z "${NOTE_EMAIL}" ] || [ -z "${NOTE_PASSWORD}" ]; then
-            echo "::error::NOTE_EMAIL / NOTE_PASSWORD が GitHub Secrets に未登録です。"
-            echo "Settings → Secrets and variables → Actions で設定してください。"
+          if [ -n "${NOTE_SESSION_JSON}" ]; then
+            echo "Secrets OK: NOTE_SESSION_JSON が登録されています（Cookie方式）"
+          elif [ -n "${NOTE_EMAIL}" ] && [ -n "${NOTE_PASSWORD}" ]; then
+            echo "Secrets OK: NOTE_EMAIL+NOTE_PASSWORD が登録されています（フォーム方式）"
+            echo "::warning::フォーム方式は reCAPTCHA により失敗する可能性があります。"
+            echo "           scripts/save_note_session.py を実行して NOTE_SESSION_JSON を登録することを推奨します。"
+          else
+            echo "::error::NOTE_SESSION_JSON または NOTE_EMAIL+NOTE_PASSWORD が未登録です。"
+            echo ""
+            echo "推奨セットアップ:"
+            echo "  1. python3 scripts/save_note_session.py をローカルで実行"
+            echo "  2. 出力の JSON を GitHub Secret NOTE_SESSION_JSON に登録"
+            echo "  （Settings → Secrets and variables → Actions）"
             exit 1
           fi
-          echo "Secrets OK: NOTE_EMAIL=${NOTE_EMAIL:0:4}****"
 
       - name: Post drafts to note
         env:
-          NOTE_EMAIL:    ${{ secrets.NOTE_EMAIL }}
-          NOTE_PASSWORD: ${{ secrets.NOTE_PASSWORD }}
+          NOTE_SESSION_JSON: ${{ secrets.NOTE_SESSION_JSON }}
+          NOTE_EMAIL:        ${{ secrets.NOTE_EMAIL }}
+          NOTE_PASSWORD:     ${{ secrets.NOTE_PASSWORD }}
         run: |
           posted=0
           failed=0
