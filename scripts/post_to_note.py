@@ -98,17 +98,55 @@ def _find_visible(page, selectors: list):
     return None
 
 
+def _fill_first(page, selectors: list, value: str, label: str) -> None:
+    """セレクタ候補を順に試して最初に見つかった入力欄に値をセットする"""
+    for sel in selectors:
+        try:
+            loc = page.locator(sel).first
+            if loc.is_visible(timeout=2000):
+                loc.fill(value)
+                print(f"  [note] {label} 入力完了（selector: {sel}）")
+                return
+        except Exception:
+            pass
+    raise RuntimeError(f"{label} の入力欄が見つかりませんでした。selectors={selectors}")
+
+
 def login(page, email: str, password: str) -> None:
     print("  [note] ログイン中...")
     page.goto(f"{NOTE_URL}/login", wait_until="domcontentloaded")
     page.wait_for_load_state("networkidle", timeout=15000)
 
-    # メールアドレス
-    page.fill('input[name="email"], input[type="email"]', email)
+    # メールアドレス（セレクタ候補を個別に試す）
+    _fill_first(page, [
+        'input[name="email"]',
+        'input[type="email"]',
+        'input[placeholder*="メール"]',
+        'input[placeholder*="mail"]',
+        'input[placeholder*="note ID"]',
+        'input[name="identifier"]',
+        'form input:first-of-type',
+    ], email, "メールアドレス")
+
     # パスワード
-    page.fill('input[name="password"], input[type="password"]', password)
+    _fill_first(page, [
+        'input[name="password"]',
+        'input[type="password"]',
+        'input[placeholder*="パスワード"]',
+        'input[placeholder*="password"]',
+    ], password, "パスワード")
+
     # ログインボタン
-    page.click('button[type="submit"]')
+    login_btn_selectors = [
+        'button[type="submit"]',
+        'button:has-text("ログイン")',
+        'input[type="submit"]',
+    ]
+    btn = _find_visible(page, login_btn_selectors)
+    if btn:
+        page.click(btn)
+    else:
+        raise RuntimeError("ログインボタンが見つかりません")
 
     try:
         page.wait_for_url(f"{NOTE_URL}/**", timeout=30000)
