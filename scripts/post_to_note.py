@@ -151,11 +151,33 @@ def login(page, email: str, password: str) -> None:
     try:
         page.wait_for_url(f"{NOTE_URL}/**", timeout=30000)
     except PWTimeout:
-        pass  # リダイレクト先が変わっても続行
+        pass
 
-    # ログイン完了まで待機
     page.wait_for_load_state("networkidle", timeout=15000)
-    print("  [note] ログイン完了")
+
+    # ログイン成功確認（まだ /login ページにいる場合は失敗）
+    current = page.url
+    print(f"  [note] ログイン後URL: {current}")
+    if "/login" in current:
+        # エラーメッセージを取得
+        err_text = ""
+        for err_sel in [
+            '[class*="error"]', '[class*="Error"]',
+            '[role="alert"]', '.o-error', 'p.error',
+        ]:
+            try:
+                el = page.locator(err_sel).first
+                if el.is_visible(timeout=500):
+                    err_text = el.inner_text()
+                    break
+            except Exception:
+                pass
+        raise RuntimeError(
+            f"ログイン失敗: まだログインページにいます。"
+            f" URL={current}  エラー文={err_text or '（取得できず）'}"
+        )
+
+    print("  [note] ログイン成功")
 
 
 def input_title(page, title: str) -> None:
