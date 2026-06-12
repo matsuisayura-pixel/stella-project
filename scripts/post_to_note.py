@@ -10,6 +10,7 @@ Usage:
 
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -46,16 +47,46 @@ EYECATCH_SELECTORS = [
 ]
 
 
+# ==================== ログヘルパー ====================
+
+def step(n: int, msg: str) -> None:
+    print(f"[STEP {n:02d}] {msg}", flush=True)
+
+
+def info(msg: str) -> None:
+    print(f"  [INFO] {msg}", flush=True)
+
+
+def warn(msg: str) -> None:
+    print(f"  [WARN] {msg}", flush=True)
+
+
+def save_debug_artifacts(page, output_dir: Path, label: str = "") -> None:
+    """失敗時にスクリーンショットと HTML を保存する"""
+    suffix = f"-{label}" if label else ""
+    ss_path   = output_dir / f"debug-screenshot{suffix}.png"
+    html_path = output_dir / f"page{suffix}.html"
+
+    try:
+        page.screenshot(path=str(ss_path), full_page=True)
+        print(f"  [DEBUG] スクリーンショット保存: {ss_path}", flush=True)
+    except Exception as e:
+        print(f"  [DEBUG] スクリーンショット保存失敗: {e}", flush=True)
+
+    try:
+        html_content = page.content()
+        html_path.write_text(html_content, encoding="utf-8")
+        print(f"  [DEBUG] HTML保存: {html_path}  ({len(html_content)} bytes)", flush=True)
+    except Exception as e:
+        print(f"  [DEBUG] HTML保存失敗: {e}", flush=True)
+
+
 # ==================== コンテンツ変換 ====================
 
 def blocks_to_html(blocks: list) -> str:
-    """body_blocks を note エディタが受け付ける HTML に変換"""
     parts = []
-    i = 0
-    while i < len(blocks):
-        b = blocks[i]
+    for b in blocks:
         t = b.get("type", "paragraph")
-
         if t == "h2":
             parts.append(f'<h2>{_escape(b["text"])}</h2>')
         elif t == "h3":
@@ -71,12 +102,8 @@ def blocks_to_html(blocks: list) -> str:
             parts.append('<hr>')
         else:
             text = b.get("text", "")
-            # インライン **bold** を <strong> に変換
-            import re
             text_html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', _escape(text))
             parts.append(f'<p>{text_html}</p>')
-
-        i += 1
     return "\n".join(parts)
 
 
@@ -87,7 +114,6 @@ def _escape(s: str) -> str:
 # ==================== Playwright 操作 ====================
 
 def _find_visible(page, selectors: list):
-    """セレクタ候補を順に試して最初に見つかったものを返す"""
     for sel in selectors:
         try:
             el = page.locator(sel).first
@@ -98,27 +124,29 @@ def _find_visible(page, selectors: list):
     return None
 
 
-def _fill_first(page, selectors: list, value: str, label: str) -> None:
-    """セレクタ候補を順に試して最初に見つかった入力欄に値をセットする"""
+def _fill_first(page, selectors: list, value: str, label: str) -> str:
+    """セレクタ候補を順に試して最初に見つかった入力欄に値をセット。使用したセレクタを返す。"""
     for sel in selectors:
         try:
             loc = page.locator(sel).first
             if loc.is_visible(timeout=2000):
                 loc.fill(value)
-                print(f"  [note] {label} 入力完了（selector: {sel}）")
-                return
+                return sel
         except Exception:
             pass
-    raise RuntimeError(f"{label} の入力欄が見つかりませんでした。selectors={selectors}")
+    raise RuntimeError(f"{label} の入力欄が見つかりませんでした。試したセレクタ: {selectors}")
 
 
-def login(page, email: str, password: str) -> None:
-    print("  [note] ログイン中...")
+# ==================== 各ステップ関数 ====================
+
+def do_login(page, output_dir: Path, email: str, password: str) -> None:
+    # STEP 1
     page.goto(f"{NOTE_URL}/login", wait_until="domcontentloaded")
     page.wait_for_load_state("networkidle", timeout=15000)
+    step(1, f"noteログインページ到達: {page.url}")
 
-    # メールアドレス（セレクタ候補を個別に試す）
-    _fill_first(page, [
+    # STEP 2
+    email_sel = _fill_first(page, [
         'input[name="email"]',
         'input[type="email"]',
         'input[placeholder*="メール"]',
@@ -127,39 +155,42 @@ def login(page, email: str, password: str) -> None:
         'input[name="identifier"]',
         'form input:first-of-type',
     ], email, "メールアドレス")
+    step(2, f"メールアドレス入力成功 (selector: {email_sel})")
 
-    # パスワード
-    _fill_first(page, [
+    # STEP 3
+    pass_sel = _fill_first(page, [
         'input[name="password"]',
         'input[type="password"]',
         'input[placeholder*="パスワード"]',
         'input[placeholder*="password"]',
     ], password, "パスワード")
+    step(3, f"パスワード入力成功 (selector: {pass_sel})")
 
-    # ログインボタン
+    # STEP 4
     login_btn_selectors = [
         'button[type="submit"]',
         'button:has-text("ログイン")',
         'input[type="submit"]',
     ]
     btn = _find_visible(page, login_btn_selectors)
-    if btn:
-        page.click(btn)
-    else:
+    if not btn:
+        save_debug_artifacts(page, output_dir, "login-no-button")
         raise RuntimeError("ログインボタンが見つかりません")
+    page.click(btn)
+    step(4, f"ログインボタンクリック (selector: {btn})")
 
     try:
         page.wait_for_url(f"{NOTE_URL}/**", timeout=30000)
     except PWTimeout:
-        pass
+        info("wait_for_url タイムアウト（続行）")
 
     page.wait_for_load_state("networkidle", timeout=15000)
 
-    # ログイン成功確認（まだ /login ページにいる場合は失敗）
+    # STEP 5
     current = page.url
-    print(f"  [note] ログイン後URL: {current}")
+    step(5, f"ログイン後URL: {current}")
+
     if "/login" in current:
-        # エラーメッセージを取得
         err_text = ""
         for err_sel in [
             '[class*="error"]', '[class*="Error"]',
@@ -168,42 +199,54 @@ def login(page, email: str, password: str) -> None:
             try:
                 el = page.locator(err_sel).first
                 if el.is_visible(timeout=500):
-                    err_text = el.inner_text()
+                    err_text = el.inner_text().strip()
                     break
             except Exception:
                 pass
+        save_debug_artifacts(page, output_dir, "login-failed")
         raise RuntimeError(
             f"ログイン失敗: まだログインページにいます。"
             f" URL={current}  エラー文={err_text or '（取得できず）'}"
         )
 
-    print("  [note] ログイン成功")
+    info("ログイン成功")
 
 
-def input_title(page, title: str) -> None:
+def do_navigate_new(page, output_dir: Path) -> None:
+    page.goto(f"{NOTE_URL}/notes/new", wait_until="domcontentloaded")
+    page.wait_for_load_state("networkidle", timeout=20000)
+    time.sleep(2)
+    current = page.url
+    # /notes/new にリダイレクトされず /login になった場合を検知
+    if "/login" in current:
+        save_debug_artifacts(page, output_dir, "new-note-redirect-login")
+        raise RuntimeError(f"新規記事ページへの遷移でログインにリダイレクトされました: {current}")
+    step(6, f"新規記事ページ到達: {current}")
+
+
+def do_input_title(page, output_dir: Path, title: str) -> None:
     sel = _find_visible(page, TITLE_SELECTORS)
     if not sel:
-        print("  [警告] タイトル欄が見つかりません（スキップ）")
-        return
+        save_debug_artifacts(page, output_dir, "title-not-found")
+        raise RuntimeError(f"タイトル欄が見つかりません。試したセレクタ: {TITLE_SELECTORS}")
     page.click(sel)
     page.evaluate(f'''() => {{
         const el = document.querySelector({json.dumps(sel)});
         if (el) {{ el.textContent = ""; }}
     }}''')
     page.keyboard.type(title, delay=20)
-    print(f"  [note] タイトル入力完了: {title[:30]}...")
+    step(7, f"タイトル入力成功 (selector: {sel})  値: {title[:40]}")
 
 
-def input_body(page, html_body: str) -> None:
+def do_input_body(page, output_dir: Path, html_body: str) -> None:
     sel = _find_visible(page, BODY_SELECTORS)
     if not sel:
-        print("  [警告] 本文欄が見つかりません（スキップ）")
-        return
+        save_debug_artifacts(page, output_dir, "body-not-found")
+        raise RuntimeError(f"本文欄が見つかりません。試したセレクタ: {BODY_SELECTORS}")
 
     page.click(sel)
     time.sleep(0.5)
 
-    # ① insertHTML で HTML をそのまま流し込む（最優先）
     success = page.evaluate(f'''(html) => {{
         const el = document.querySelector({json.dumps(sel)});
         if (!el) return false;
@@ -211,9 +254,10 @@ def input_body(page, html_body: str) -> None:
         document.execCommand("selectAll", false, null);
         return document.execCommand("insertHTML", false, html);
     }}''', html_body)
+    info(f"insertHTML 結果: {success}")
 
     if not success:
-        # ② Clipboard API 経由でペースト（fallback）
+        info("insertHTML 失敗 → クリップボード経由でフォールバック")
         page.evaluate(f'''async (html) => {{
             const blob = new Blob([html], {{type: "text/html"}});
             const item = new ClipboardItem({{"text/html": blob}});
@@ -223,26 +267,24 @@ def input_body(page, html_body: str) -> None:
         page.keyboard.press("Control+v")
 
     time.sleep(1)
-    print("  [note] 本文入力完了")
+    step(8, f"本文入力成功 (selector: {sel})  HTML長: {len(html_body)} chars")
 
 
-def upload_eyecatch(page, image_path: Path) -> None:
+def do_upload_eyecatch(page, output_dir: Path, image_path: Path) -> None:
     if not image_path.exists():
-        print("  [note] アイキャッチ画像なし（スキップ）")
+        warn(f"アイキャッチ画像が存在しません（スキップ）: {image_path}")
         return
 
-    # ファイルチューザー経由でアップロード
     for sel in EYECATCH_SELECTORS:
         try:
             if page.locator(sel).count() > 0:
                 page.locator(sel).first.set_input_files(str(image_path))
                 time.sleep(2)
-                print("  [note] アイキャッチ画像アップロード完了")
+                step(9, f"アイキャッチアップロード成功 (selector: {sel})")
                 return
-        except Exception:
-            pass
+        except Exception as e:
+            info(f"eyecatch selector '{sel}' 失敗: {e}")
 
-    # ボタンクリック経由でファイルチューザーを開く fallback
     eyecatch_buttons = [
         'button:has-text("画像をアップロード")',
         'button:has-text("サムネイル")',
@@ -256,35 +298,40 @@ def upload_eyecatch(page, image_path: Path) -> None:
                     page.click(btn)
                 fc_info.value.set_files(str(image_path))
                 time.sleep(2)
-                print("  [note] アイキャッチ画像アップロード完了（ボタン経由）")
+                step(9, f"アイキャッチアップロード成功（ボタン経由: {btn}）")
                 return
-        except Exception:
-            pass
+        except Exception as e:
+            info(f"eyecatch button '{btn}' 失敗: {e}")
 
-    print("  [警告] アイキャッチアップロードボタンが見つかりません")
+    warn("アイキャッチアップロードボタンが見つかりません（スキップ）")
+    step(9, "アイキャッチアップロード: スキップ（ボタン未検出）")
 
 
-def save_draft(page) -> str:
-    """下書き保存し、記事 URL を返す"""
+def do_save_draft(page, output_dir: Path) -> str:
     sel = _find_visible(page, SAVE_DRAFT_SELECTORS)
     if sel:
         page.click(sel)
+        step(10, f"下書き保存ボタンクリック (selector: {sel})")
     else:
-        # Ctrl+S fallback
+        info("下書き保存ボタン未検出 → Ctrl+S フォールバック")
         page.keyboard.press("Control+s")
+        step(10, "下書き保存ボタンクリック: Ctrl+S フォールバック使用")
 
     time.sleep(3)
 
-    # 保存後の URL を取得
     url = page.url
-    print(f"  [note] 下書き保存完了: {url}")
+    step(11, f"保存後URL: {url}")
+
+    if "/login" in url:
+        save_debug_artifacts(page, output_dir, "after-save-login")
+        raise RuntimeError(f"下書き保存後にログインページへリダイレクトされました: {url}")
+
     return url
 
 
-def quality_check(page, url: str, content: dict) -> dict:
-    """下書き URL にアクセスして反映状況をチェック"""
+def do_quality_check(page, url: str, content: dict) -> dict:
     result = {
-        "url": url,
+        "url":      url,
         "title":    False,
         "h2":       False,
         "h3":       False,
@@ -292,25 +339,20 @@ def quality_check(page, url: str, content: dict) -> dict:
         "cta":      False,
         "eyecatch": False,
     }
-
     try:
         page.goto(url, wait_until="domcontentloaded")
         page.wait_for_load_state("networkidle", timeout=15000)
         html = page.content()
-
         title = content.get("title", "")
         if title and title[:10] in html:
             result["title"] = True
-
-        result["h2"] = "<h2" in html
-        result["h3"] = "<h3" in html
-        result["bold"] = "<strong" in html or "<b>" in html
-        result["cta"] = "LINE" in html or "魂の現在地" in html
+        result["h2"]       = "<h2" in html
+        result["h3"]       = "<h3" in html
+        result["bold"]     = "<strong" in html or "<b>" in html
+        result["cta"]      = "LINE" in html or "魂の現在地" in html
         result["eyecatch"] = 'og:image' in html or '<img' in html
-
     except Exception as e:
-        print(f"  [警告] 品質チェック中にエラー: {e}")
-
+        warn(f"品質チェック中にエラー: {e}")
     return result
 
 
@@ -326,10 +368,15 @@ def post_to_note(output_dir: Path) -> str:
     if not content_path.exists():
         raise SystemExit(f"ERROR: content.json が見つかりません: {content_path}")
 
-    content = json.loads(content_path.read_text(encoding="utf-8"))
-    title      = content.get("title", "（タイトルなし）")
-    body_html  = blocks_to_html(content.get("body_blocks", []))
-    eyecatch   = output_dir / "images" / "eyecatch.png"
+    content   = json.loads(content_path.read_text(encoding="utf-8"))
+    title     = content.get("title", "（タイトルなし）")
+    body_html = blocks_to_html(content.get("body_blocks", []))
+    eyecatch  = output_dir / "images" / "eyecatch.png"
+
+    info(f"対象ディレクトリ: {output_dir}")
+    info(f"タイトル: {title[:50]}")
+    info(f"本文HTML長: {len(body_html)} chars")
+    info(f"アイキャッチ: {eyecatch}  存在={eyecatch.exists()}")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
@@ -344,42 +391,21 @@ def post_to_note(output_dir: Path) -> str:
         page = context.new_page()
 
         try:
-            # STEP4: ログイン
-            login(page, email, password)
+            do_login(page, output_dir, email, password)
+            do_navigate_new(page, output_dir)
+            do_input_title(page, output_dir, title)
+            do_input_body(page, output_dir, body_html)
+            do_upload_eyecatch(page, output_dir, eyecatch)
+            draft_url = do_save_draft(page, output_dir)
 
-            # STEP5: 新規記事作成ページへ
-            print("  [note] 記事作成ページへ移動...")
-            page.goto(f"{NOTE_URL}/notes/new", wait_until="domcontentloaded")
-            page.wait_for_load_state("networkidle", timeout=20000)
-            time.sleep(2)
-
-            # STEP5: タイトル入力
-            input_title(page, title)
-
-            # STEP6: 本文入力（HTML貼り付け）
-            input_body(page, body_html)
-
-            # STEP7: アイキャッチ設定
-            upload_eyecatch(page, eyecatch)
-
-            # STEP5: 下書き保存
-            draft_url = save_draft(page)
-
-            # STEP8: 品質確認
-            print("  [note] 品質チェック中...")
-            qc = quality_check(page, draft_url, content)
+            info("品質チェック中...")
+            qc = do_quality_check(page, draft_url, content)
             print_quality_report(qc)
 
             return draft_url
 
         except Exception as e:
-            # デバッグ用スクリーンショット
-            ss_path = output_dir / "debug-screenshot.png"
-            try:
-                page.screenshot(path=str(ss_path), full_page=True)
-                print(f"  [デバッグ] スクリーンショット保存: {ss_path}")
-            except Exception:
-                pass
+            save_debug_artifacts(page, output_dir, "error")
             raise RuntimeError(f"note 投稿失敗: {e}") from e
 
         finally:
@@ -389,12 +415,12 @@ def post_to_note(output_dir: Path) -> str:
 def print_quality_report(qc: dict) -> None:
     print("\n  ── 品質チェック結果 ──────────────────")
     checks = [
-        ("タイトル反映",       qc["title"]),
-        ("H2 反映",           qc["h2"]),
-        ("H3 反映",           qc["h3"]),
-        ("太字反映",           qc["bold"]),
-        ("CTA 反映",          qc["cta"]),
-        ("アイキャッチ反映",   qc["eyecatch"]),
+        ("タイトル反映",     qc["title"]),
+        ("H2 反映",         qc["h2"]),
+        ("H3 反映",         qc["h3"]),
+        ("太字反映",         qc["bold"]),
+        ("CTA 反映",        qc["cta"]),
+        ("アイキャッチ反映", qc["eyecatch"]),
     ]
     all_ok = True
     for label, ok in checks:
@@ -415,11 +441,11 @@ def main():
     output_dir = Path(sys.argv[1])
     draft_url = post_to_note(output_dir)
 
-    # draft-url.txt を保存
+    # STEP 12
     url_file = output_dir / "draft-url.txt"
     url_file.write_text(draft_url, encoding="utf-8")
+    step(12, f"draft-url.txt 保存完了: {url_file}")
     print(f"  ✓ 下書きURL: {draft_url}")
-    print(f"  ✓ 保存先   : {url_file}")
 
 
 if __name__ == "__main__":
